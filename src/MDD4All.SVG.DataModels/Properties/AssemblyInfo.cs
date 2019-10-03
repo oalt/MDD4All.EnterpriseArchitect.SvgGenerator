@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("MDD4All.SVG.DataModels")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Data model for SVG")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("MDD4All.de")]
 [assembly: AssemblyProduct("MDD4All.SVG.DataModels")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("© MDD4All.de")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

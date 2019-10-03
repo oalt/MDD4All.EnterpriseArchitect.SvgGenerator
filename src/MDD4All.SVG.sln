@@ -11,7 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDD4All.SVG.Tests", "MDD4Al
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D5554AFE-E62E-4ACB-B641-6D3FC58C668F}"
 	ProjectSection(SolutionItems) = preProject
+		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		build.xml = build.xml
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
 		version.txt = version.txt
 	EndProjectSection
 EndProject
