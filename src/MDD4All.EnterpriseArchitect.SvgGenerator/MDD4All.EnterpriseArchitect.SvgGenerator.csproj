@@ -31,14 +31,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Interop.EA, Version=2.10.238.1, Culture=neutral, PublicKeyToken=d28e1c76302f6a17, processorArchitecture=MSIL">
-      <HintPath>..\packages\Interop.EA.12.1.1230\lib\Interop.EA.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>..\libs\Interop.EA.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="MDD4All.EnterpriseArchitect.Manipulations, Version=2.1.0.7, Culture=neutral, PublicKeyToken=7775311d0fab0175, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.EnterpriseArchitect.Manipulations.2.1.0.7-dev\lib\net40\MDD4All.EnterpriseArchitect.Manipulations.dll</HintPath>
+    <Reference Include="MDD4All.EnterpriseArchitect.Manipulations, Version=2.3.0.89, Culture=neutral, PublicKeyToken=7775311d0fab0175, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EnterpriseArchitect.Manipulations.2.3.0.89\lib\net40\MDD4All.EnterpriseArchitect.Manipulations.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -60,6 +61,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="MDD4All.EnterpriseArchitect.SvgGenerator.nuspec" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

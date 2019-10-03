@@ -56,5 +56,8 @@
     <Compile Include="Text.cs" />
     <Compile Include="Title.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="MDD4All.SVG.DataModels.nuspec" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
