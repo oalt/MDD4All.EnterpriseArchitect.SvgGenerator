@@ -9,14 +9,19 @@ using MDD4All.SVG.DataModels.Extensions;
 using EAAPI = EA;
 using System.Globalization;
 using System.Drawing;
-using log4net;
 using MDD4All.EnterpriseArchitect.Manipulations;
+using NLog;
+using MDD4All.SpecIF.DataModels.DiagramInterchange;
+using MDD4All.SpecIF.DataModels.DiagramInterchange.DiagramDefinition;
+using System.Security.Cryptography;
+using System.Text;
+using MDD4All.EnterpriseArchitect.SvgGenerator.DataModels;
 
 namespace MDD4All.EnterpriseArchitect.SvgGenerator
 {
 	public class DiagramToSvgConverter
 	{
-		private static readonly ILog logger = LogManager.GetLogger(typeof(DiagramToSvgConverter));
+		private static Logger logger = LogManager.GetCurrentClassLogger();
 
 		private int _maxX = 0;
 		//private int _maxY = 0;
@@ -39,17 +44,41 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 			
 			result.Height = diagram.cy.ToString();
 
-			ConvertDiagramElements(diagram, ref result);
+			Group diagramCanvasGroup = new Group();
 
-			ConvertDiagramLinks(diagram, ref result);
+			diagramCanvasGroup.Metadata = new Metadata();
+
+			diagramCanvasGroup.Title = new Title();
+
+			diagramCanvasGroup.Title.Text = diagram.Name;
+
+			diagramCanvasGroup.Class = "specif-diagram";
+
+			ConvertDiagramElements(diagram, ref diagramCanvasGroup);
+
+			ConvertDiagramLinks(diagram, ref diagramCanvasGroup);
 
 			_maxX += 10;
 			result.Width = _maxX.ToString();
 
+			diagramCanvasGroup.Metadata.ResourceDiagramElement = new ResourceDiagramElement
+			{
+				IdReference = GetSpecIfIdentifier(diagram.DiagramGUID),
+				RevisionReference = GetRevisonFromDate(diagram.ModifiedDate),
+				Bounds = new Bounds
+                {
+					X = 0,
+					Y = 0,
+					Width = _maxX
+                }
+			};
+
+			result.Groups.Add(diagramCanvasGroup);
+
 			return result;
 		}
 
-		private void ConvertDiagramLinks(EAAPI.Diagram diagram, ref ScalableVectorGraphics result)
+		private void ConvertDiagramLinks(EAAPI.Diagram diagram, ref Group result)
 		{
 			for (short counter = 0; counter < diagram.DiagramLinks.Count; counter++)
 			{
@@ -57,7 +86,25 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 				EAAPI.Connector connector = _repository.GetConnectorByID(diagramLink.ConnectorID);
 
-				if (connector.Stereotype == "access type")
+				Group lineGroup = new Group();
+
+				lineGroup.ID = diagramLink.InstanceID.ToString();
+
+				lineGroup.Class = "specif-statement-diagram-element";
+
+				lineGroup.Metadata = new Metadata();
+
+				lineGroup.Metadata.StatementDiagramElement = new StatementDiagramElement
+				{
+					Waypoints = new List<Waypoint>(),
+					IdReference = GetSpecIfIdentifier(connector.ConnectorGUID),
+					RevisionReference = null
+				};
+
+				string connectorType = connector.Type;
+
+				//if (connector.Stereotype == "access type")
+				//if(connectorType != "Aggragation")
 				{
 
 					EAAPI.Element sourceElement = _repository.GetElementByID(connector.ClientID);
@@ -68,8 +115,8 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 					EAAPI.DiagramObject targetDiagramObject = GetDiagramObjectForElement(targetElement.ElementID, diagram);
 
-					Group lineGroup = new Group();
-					
+
+
 
 					bool startArrow = false;
 					bool endArrow = false;
@@ -93,306 +140,190 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 					int startY;
 					int endY;
 
+					//EAAPI.LinkLineStyle.LineStyleOrthogonalRounded
+
 					List<Point> linkPathPoints = ParseEaLinkPath(diagramLink.Path);
 					List<Point> arcPoints = new List<Point>();
 					List<bool> lineOrientations = new List<bool>();
 
-					// horizontal coordinates calculation
-					if (linkPathPoints.Count == 0) // direct line
-					{
-						// horizontal calculation
-						// source --> target
-						if (sourceDiagramObject.right < targetDiagramObject.left)
-						{
-							startX = sourceDiagramObject.right;
-							endX = targetDiagramObject.left;
-						}
-						else if (sourceDiagramObject.left > targetDiagramObject.right) // target <-- source
-						{
-							startX = sourceDiagramObject.left;
-							endX = targetDiagramObject.right;
-						}
-						else
-						{
-							startX = sourceDiagramObject.left + (sourceDiagramObject.right - sourceDiagramObject.left) / 2;
-							endX = startX;
-						}
-					}
-					else // bended line
-					{
 
-						// start of path
+                    // horizontal coordinates calculation
+                    if (linkPathPoints.Count == 0) // direct line
+                    {
+                        // horizontal calculation
+                        // source --> target
+                        if (sourceDiagramObject.right < targetDiagramObject.left)
+                        {
+                            startX = sourceDiagramObject.right;
+                            endX = targetDiagramObject.left;
+                        }
+                        else if (sourceDiagramObject.left > targetDiagramObject.right) // target <-- source
+                        {
+                            startX = sourceDiagramObject.left;
+                            endX = targetDiagramObject.right;
+                        }
+                        else
+                        {
+                            startX = sourceDiagramObject.left + (sourceDiagramObject.right - sourceDiagramObject.left) / 2;
+                            endX = startX;
+                        }
+                    }
+                    else // bended line
+                    {
 
-						// horizontal calculation
-						// source --> target
-						if (sourceDiagramObject.right < linkPathPoints[0].X)
-						{
-							startX = sourceDiagramObject.right;
-						}
-						else if (sourceDiagramObject.left > linkPathPoints[0].X) // target <-- source
-						{
-							startX = sourceDiagramObject.left;
-						}
-						else
-						{
-							startX = linkPathPoints[0].X;
-						}
+                        // start of path
 
-						// end of path
+                        // horizontal calculation
+                        // source --> target
+                        if (sourceDiagramObject.right < linkPathPoints[0].X)
+                        {
+                            startX = sourceDiagramObject.right;
+                        }
+                        else if (sourceDiagramObject.left > linkPathPoints[0].X) // target <-- source
+                        {
+                            startX = sourceDiagramObject.left;
+                        }
+                        else
+                        {
+                            startX = linkPathPoints[0].X;
+                        }
 
-						// horizontal calculation
-						// target <-- last path
-						if (targetDiagramObject.right < linkPathPoints[linkPathPoints.Count - 1].X)
-						{
-							endX = targetDiagramObject.right;
-						}
-						else if (targetDiagramObject.left > linkPathPoints[linkPathPoints.Count - 1].X) // target --> last path
-						{
-							endX = targetDiagramObject.left;
-						}
-						else
-						{
+                        // end of path
 
-							endX = linkPathPoints[linkPathPoints.Count - 1].X;
-						}
-					}
+                        // horizontal calculation
+                        // target <-- last path
+                        if (targetDiagramObject.right < linkPathPoints[linkPathPoints.Count - 1].X)
+                        {
+                            endX = targetDiagramObject.right;
+                        }
+                        else if (targetDiagramObject.left > linkPathPoints[linkPathPoints.Count - 1].X) // target --> last path
+                        {
+                            endX = targetDiagramObject.left;
+                        }
+                        else
+                        {
 
-					// vertical coordinates calculation
-					if (linkPathPoints.Count == 0)
-					{
-						// vertical calculation
-						// source above target, vertical
-						if (-sourceDiagramObject.bottom < -targetDiagramObject.top)
-						{
-							startY = -sourceDiagramObject.bottom;
-							endY = -targetDiagramObject.top;
-						}
-						// source below target, vertival
-						else if (-sourceDiagramObject.top > -targetDiagramObject.bottom)
-						{
-							startY = -sourceDiagramObject.top;
-							endY = -targetDiagramObject.bottom;
-						}
-						else
-						{
-							startY = -sourceDiagramObject.top + (-sourceDiagramObject.bottom + sourceDiagramObject.top) / 2;
-							endY = startY;
-						}
-					}
-					else
-					{
-						// source above target, vertical
-						if (-sourceDiagramObject.bottom < linkPathPoints[0].Y)
-						{
-							startY = -sourceDiagramObject.bottom;
-							
-						}
-						// source below target, vertival
-						else if (-sourceDiagramObject.top > linkPathPoints[0].Y)
-						{
-							startY = -sourceDiagramObject.top;
-							
-						}
-						else
-						{
-							startY = linkPathPoints[0].Y; // -sourceDiagramObject.top + (-sourceDiagramObject.bottom + sourceDiagramObject.top) / 2;
-							
-						}
+                            endX = linkPathPoints[linkPathPoints.Count - 1].X;
+                        }
+                    }
 
-						// source above target, vertical
-						if (-targetDiagramObject.top > linkPathPoints[linkPathPoints.Count - 1].Y)
-						{
-							endY = -targetDiagramObject.top;
+                    // vertical coordinates calculation
+                    if (linkPathPoints.Count == 0)
+                    {
+                        // vertical calculation
+                        // source above target, vertical
+                        if (-sourceDiagramObject.bottom < -targetDiagramObject.top)
+                        {
+                            startY = -sourceDiagramObject.bottom;
+                            endY = -targetDiagramObject.top;
+                        }
+                        // source below target, vertival
+                        else if (-sourceDiagramObject.top > -targetDiagramObject.bottom)
+                        {
+                            startY = -sourceDiagramObject.top;
+                            endY = -targetDiagramObject.bottom;
+                        }
+                        else
+                        {
+                            startY = -sourceDiagramObject.top + (-sourceDiagramObject.bottom + sourceDiagramObject.top) / 2;
+                            endY = startY;
+                        }
+                    }
+                    else
+                    {
+                        // source above target, vertical
+                        if (-sourceDiagramObject.bottom < linkPathPoints[0].Y)
+                        {
+                            startY = -sourceDiagramObject.bottom;
 
-						}
-						// source below target, vertival
-						else if (-targetDiagramObject.bottom < linkPathPoints[linkPathPoints.Count - 1].Y)
-						{
-							endY = -targetDiagramObject.bottom;
+                        }
+                        // source below target, vertival
+                        else if (-sourceDiagramObject.top > linkPathPoints[0].Y)
+                        {
+                            startY = -sourceDiagramObject.top;
 
-						}
-						else
-						{
-							endY = linkPathPoints[linkPathPoints.Count - 1].Y; //-targetDiagramObject.top + (-targetDiagramObject.bottom + targetDiagramObject.top) / 2;
+                        }
+                        else
+                        {
+                            startY = linkPathPoints[0].Y; // -sourceDiagramObject.top + (-sourceDiagramObject.bottom + sourceDiagramObject.top) / 2;
 
-						}
-					}
-					
+                        }
 
-					string path = "" + startX + "," + startY + " ";
+                        // source above target, vertical
+                        if (-targetDiagramObject.top > linkPathPoints[linkPathPoints.Count - 1].Y)
+                        {
+                            endY = -targetDiagramObject.top;
 
-					if(linkPathPoints.Count == 0)
-					{
-						Line line = new Line()
-						{
-							X1 = startX.ToString(),
-							Y1 = startY.ToString(),
-							X2 = endX.ToString(),
-							Y2 = endY.ToString(),
-							Stroke = "black",
-							StrokeWidth = "1"
-						};
+                        }
+                        // source below target, vertival
+                        else if (-targetDiagramObject.bottom < linkPathPoints[linkPathPoints.Count - 1].Y)
+                        {
+                            endY = -targetDiagramObject.bottom;
 
-						lineGroup.Lines.Add(line);
-					}
-					else
-					{
-						int segmentCounter = 0;
+                        }
+                        else
+                        {
+                            endY = linkPathPoints[linkPathPoints.Count - 1].Y; //-targetDiagramObject.top + (-targetDiagramObject.bottom + targetDiagramObject.top) / 2;
 
-						do
-						{
-							int x1, y1, x2, y2;
+                        }
+                    }
 
 
-							Line line = new Line()
-							{
-								Stroke = "black",
-								StrokeWidth = "1"
-							};
-							
+                    string path = "" + startX + "," + startY + " ";
 
-							if (segmentCounter == 0)
-							{
-								// first segment
-								x1 = startX;
-								y1 = startY;
-																
-								if(startX == linkPathPoints[0].X)
-								{
+					List<Point> segmentPoints = new List<Point>();
 
-									// vertical line segmant
-									lineOrientations.Add(false);
+					CalculateConnectorSegmentCoordinates(startX, endX, startY, endY,
+						diagramLink.LineStyle, linkPathPoints, ref segmentPoints, ref arcPoints, ref lineOrientations);
 
-									x2 = linkPathPoints[0].X;
-									if(linkPathPoints[0].Y < startY)
-									{
-										y2 = linkPathPoints[0].Y + 10; 
-									}
-									else
-									{
-										y2 = linkPathPoints[0].Y - 10;
-									}
-								}
-								else
-								{
-									// horizontal line segment
-									lineOrientations.Add(true);
+					ConnectorShape connectorShape = ConnectorShapeFactory.GetElementShape(connector, _repository);
 
-									y2 = linkPathPoints[0].Y;
-									if(linkPathPoints[0].X < startX)
-									{
-										x2 = linkPathPoints[0].X + 10;
-									}
-									else
-									{
-										x2 = linkPathPoints[0].X - 10;
-									}
-								}
+					for(int segmentCounter = 0; segmentCounter < segmentPoints.Count; segmentCounter += 2)
+                    {
+                        Line line = new Line()
+                        {
+                            X1 = segmentPoints[segmentCounter].X.ToString(),
+                            Y1 = segmentPoints[segmentCounter].Y.ToString(),
+							X2 = segmentPoints[segmentCounter + 1].X.ToString(),
+							Y2 = segmentPoints[segmentCounter + 1].Y.ToString(),
+							Stroke = connectorShape.Color,
+                            StrokeWidth = connectorShape.Width
+                        };
 
-								arcPoints.Add(new Point(x2, y2));
+						if(!string.IsNullOrEmpty(connectorShape.StrokeDashArray))
+                        {
+							line.StrokeDashArray = connectorShape.StrokeDashArray;
+                        }
 
-							}
-							else if(segmentCounter == linkPathPoints.Count)
-							{
-								// last segment
-								x2 = endX;
-								y2 = endY;
+                        lineGroup.Lines.Add(line);
 
-								if (endX == linkPathPoints[linkPathPoints.Count - 1].X)
-								{
-									// vertical line segmant
-									lineOrientations.Add(false);
-
-									x1 = linkPathPoints[linkPathPoints.Count - 1].X;
-									if (linkPathPoints[linkPathPoints.Count - 1].Y < endY)
-									{
-										y1 = linkPathPoints[linkPathPoints.Count - 1].Y + 10;
-									}
-									else
-									{
-										y1 = linkPathPoints[linkPathPoints.Count - 1].Y - 10;
-									}
-								}
-								else
-								{
-									// horizontal line segment
-									lineOrientations.Add(true);
-									y1 = linkPathPoints[linkPathPoints.Count - 1].Y;
-									if (linkPathPoints[linkPathPoints.Count - 1].X < endX)
-									{
-										x1 = linkPathPoints[linkPathPoints.Count - 1].X + 10;
-									}
-									else
-									{
-										x1 = linkPathPoints[linkPathPoints.Count - 1].X - 10;
-									}
-								}
-								arcPoints.Add(new Point(x1, y1));
-							}
-							else
-							{
-								// middle segment
-								Point bendPoint1 = linkPathPoints[segmentCounter - 1];
-								Point bendPoint2 = linkPathPoints[segmentCounter];
-
-								if(bendPoint1.X == bendPoint2.X)
-								{
-									// vertical line
-									lineOrientations.Add(false);
-
-									x1 = bendPoint1.X;
-									x2 = bendPoint2.X;
-
-									if(bendPoint1.Y < bendPoint2.Y)
-									{
-										y1 = bendPoint1.Y + 10;
-										y2 = bendPoint2.Y - 10;
-									}
-									else
-									{
-										y1 = bendPoint1.Y - 10;
-										y2 = bendPoint2.Y + 10;
-									}
-								}
-								else
-								{
-									// horizontal line
-									lineOrientations.Add(true);
-
-									y1 = bendPoint1.Y;
-									y2 = bendPoint2.Y;
-
-									if(bendPoint1.X < bendPoint2.X)
-									{
-										x1 = bendPoint1.X + 10;
-										x2 = bendPoint2.X - 10;
-									}
-									else
-									{
-										x1 = bendPoint1.X - 10;
-										x2 = bendPoint2.X + 10;
-									}
-
-								}
-
-								arcPoints.Add(new Point(x1, y1));
-								arcPoints.Add(new Point(x2, y2));
-							}
-
-							line.X1 = x1.ToString();
-							line.X2 = x2.ToString();
-							line.Y1 = y1.ToString();
-							line.Y2 = y2.ToString();
-
-							lineGroup.Lines.Add(line);
-							segmentCounter++;
-
-						} while (segmentCounter <= linkPathPoints.Count);
+                        
 					}
 
-					#region ARCS
+                    lineGroup.Metadata.StatementDiagramElement.Waypoints.Add(new Waypoint
+                    {
+                        X = startX,
+                        Y = startY
+                    });
 
-					for(int arcCounter = 0; arcCounter < arcPoints.Count; arcCounter += 2)
+                    foreach (Point bendPoint in linkPathPoints)
+                    {
+                        lineGroup.Metadata.StatementDiagramElement.Waypoints.Add(new Waypoint
+                        {
+                            X = bendPoint.X,
+                            Y = bendPoint.Y
+                        });
+                    }
+
+                    lineGroup.Metadata.StatementDiagramElement.Waypoints.Add(new Waypoint
+                    {
+                        X = endX,
+                        Y = endY
+                    });
+
+                    #region ARCS
+
+                    for (int arcCounter = 0; arcCounter < arcPoints.Count; arcCounter += 2)
 					{
 						Point startArc = arcPoints[arcCounter];
 						Point endArc = arcPoints[arcCounter + 1];
@@ -449,10 +380,15 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 						Path arcPath = new Path()
 						{
-							Stroke = "black",
-							StrokeWidth = "1",
+							Stroke = connectorShape.Color,
+							StrokeWidth = connectorShape.Width,
 							Fill = "none"
 						};
+
+						if(!string.IsNullOrEmpty(connectorShape.StrokeDashArray))
+                        {
+							arcPath.StrokeDashArray = connectorShape.StrokeDashArray;
+                        }
 
 						string clockWiseFlag = clockwise ? "1" : "0";
 
@@ -465,161 +401,414 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 					#region ARROW_HEADS
 
-					// arrow heads
-					if (linkPathPoints.Count == 0)
+					if (connectorType != "Aggregation")
 					{
-						// single line
-						// start arrow
-						if(startArrow)
+						// arrow heads
+						if (linkPathPoints.Count == 0)
 						{
-							if(startX == endX)
+							// single line
+							// start arrow
+							if (startArrow)
 							{
-								// vertcal line
-								Path startArrowPath;
-
-								if (endY > startY)
+								if (startX == endX)
 								{
-									startArrowPath = GetVerticalArrow(startX, startY, true);
+									// vertcal line
+									Path startArrowPath;
+
+									if (endY > startY)
+									{
+										startArrowPath = GetVerticalArrow(startX, startY, true);
+									}
+									else
+									{
+										startArrowPath = GetVerticalArrow(startX, startY, false);
+									}
+
+									lineGroup.Paths.Add(startArrowPath);
 								}
 								else
 								{
-									startArrowPath = GetVerticalArrow(startX, startY, false);
-								}
+									// horizontal line
+									Path startArrowPath;
 
-								lineGroup.Paths.Add(startArrowPath);
+									if (endX > startX)
+									{
+										startArrowPath = GetHorizontalArrow(startX, startY, false);
+									}
+									else
+									{
+										startArrowPath = GetHorizontalArrow(startX, startY, true);
+									}
+
+									lineGroup.Paths.Add(startArrowPath);
+
+								}
 							}
-							else
-							{
-								// horizontal line
-								Path startArrowPath;
 
-								if (endX > startX)
+							if (endArrow)
+							{
+								if (startX == endX)
 								{
-									startArrowPath = GetHorizontalArrow(startX, startY, false);
+									Path endArrowPath;
+									// vertical line
+									if (endY > startY)
+									{
+										endArrowPath = GetVerticalArrow(endX, endY, false);
+									}
+									else
+									{
+										endArrowPath = GetVerticalArrow(endX, endY, true);
+									}
+									lineGroup.Paths.Add(endArrowPath);
 								}
 								else
 								{
-									startArrowPath = GetHorizontalArrow(startX, startY, true);
+									Path endArrowPath;
+									// horizontal line
+									if (endX > startX)
+									{
+										endArrowPath = GetHorizontalArrow(endX, endY, true);
+									}
+									else
+									{
+										endArrowPath = GetHorizontalArrow(endX, endY, false);
+									}
+									lineGroup.Paths.Add(endArrowPath);
+
 								}
+							}
 
-								lineGroup.Paths.Add(startArrowPath);
+						}
+						else
+						{
+							// bended line
+							// start arrow
+							if (startArrow)
+							{
+								if (startX == linkPathPoints[0].X)
+								{
+									// vertcal line
+									Path startArrowPath;
 
+									if (endY > linkPathPoints[0].Y)
+									{
+										startArrowPath = GetVerticalArrow(startX, startY, true);
+									}
+									else
+									{
+										startArrowPath = GetVerticalArrow(startX, startY, false);
+									}
+
+									lineGroup.Paths.Add(startArrowPath);
+								}
+								else
+								{
+									// horizontal line
+									Path startArrowPath;
+
+									if (endX > linkPathPoints[linkPathPoints.Count - 1].X)
+									{
+										startArrowPath = GetHorizontalArrow(startX, startY, false);
+									}
+									else
+									{
+										startArrowPath = GetHorizontalArrow(startX, startY, true);
+									}
+
+									lineGroup.Paths.Add(startArrowPath);
+
+								}
+							}
+
+							if (endArrow)
+							{
+								if (linkPathPoints[linkPathPoints.Count - 1].X == endX)
+								{
+									Path endArrowPath;
+									// vertical line
+									if (endY > linkPathPoints[linkPathPoints.Count - 1].Y)
+									{
+										endArrowPath = GetVerticalArrow(endX, endY, false);
+									}
+									else
+									{
+										endArrowPath = GetVerticalArrow(endX, endY, true);
+									}
+									lineGroup.Paths.Add(endArrowPath);
+								}
+								else
+								{
+									Path endArrowPath;
+									// horizontal line
+									if (endX > linkPathPoints[linkPathPoints.Count - 1].X)
+									{
+										endArrowPath = GetHorizontalArrow(endX, endY, true);
+									}
+									else
+									{
+										endArrowPath = GetHorizontalArrow(endX, endY, false);
+									}
+									lineGroup.Paths.Add(endArrowPath);
+
+								}
 							}
 						}
 
-						if(endArrow)
-						{
-							if (startX == endX)
-							{
-								Path endArrowPath;
-								// vertical line
-								if(endY > startY)
-								{
-									endArrowPath = GetVerticalArrow(endX, endY, false);
-								}
-								else
-								{
-									endArrowPath = GetVerticalArrow(endX, endY, true);
-								}
-								lineGroup.Paths.Add(endArrowPath);
-							}
-							else
-							{
-								Path endArrowPath;
-								// horizontal line
-								if (endX > startX)
-								{
-									endArrowPath = GetHorizontalArrow(endX, endY, true);
-								}
-								else
-								{
-									endArrowPath = GetHorizontalArrow(endX, endY, false);
-								}
-								lineGroup.Paths.Add(endArrowPath);
+						#endregion
 
-							}
-						}
-
+						result.Groups.Add(lineGroup);
 					}
-					else
-					{
-						// bended line
-						// start arrow
-						if (startArrow)
-						{
-							if (startX == linkPathPoints[0].X)
-							{
-								// vertcal line
-								Path startArrowPath;
-
-								if (endY > linkPathPoints[0].Y)
-								{
-									startArrowPath = GetVerticalArrow(startX, startY, true);
-								}
-								else
-								{
-									startArrowPath = GetVerticalArrow(startX, startY, false);
-								}
-
-								lineGroup.Paths.Add(startArrowPath);
-							}
-							else
-							{
-								// horizontal line
-								Path startArrowPath;
-
-								if (endX > linkPathPoints[linkPathPoints.Count -1].X)
-								{
-									startArrowPath = GetHorizontalArrow(startX, startY, false);
-								}
-								else
-								{
-									startArrowPath = GetHorizontalArrow(startX, startY, true);
-								}
-
-								lineGroup.Paths.Add(startArrowPath);
-
-							}
-						}
-
-						if (endArrow)
-						{
-							if (linkPathPoints[linkPathPoints.Count -1].X == endX)
-							{
-								Path endArrowPath;
-								// vertical line
-								if (endY > linkPathPoints[linkPathPoints.Count -1].Y)
-								{
-									endArrowPath = GetVerticalArrow(endX, endY, false);
-								}
-								else
-								{
-									endArrowPath = GetVerticalArrow(endX, endY, true);
-								}
-								lineGroup.Paths.Add(endArrowPath);
-							}
-							else
-							{
-								Path endArrowPath;
-								// horizontal line
-								if (endX > linkPathPoints[linkPathPoints.Count-1].X)
-								{
-									endArrowPath = GetHorizontalArrow(endX, endY, true);
-								}
-								else
-								{
-									endArrowPath = GetHorizontalArrow(endX, endY, false);
-								}
-								lineGroup.Paths.Add(endArrowPath);
-
-							}
-						}
-					}
-
-					#endregion
-
-					result.Groups.Add(lineGroup);
 				}
+			}
+		}
+
+		private void CalculateConnectorSegmentCoordinates(int startX,
+														  int endX,
+														  int startY,
+														  int endY,
+														  EAAPI.LinkLineStyle lineStyle,
+														  List<Point> linkPathPoints,
+														  ref List<Point> segmentPoints,
+														  ref List<Point> arcPoints,
+														  ref List<bool> lineOrientations)
+		{
+			if (linkPathPoints.Count == 0) // direct line
+			{
+				segmentPoints.Add(new Point
+				{
+					X = startX,
+					Y = startY
+				});
+
+				segmentPoints.Add(new Point
+				{
+					X = endX,
+					Y = endY
+				});
+			}
+			else // bended line
+            {
+				
+
+				int segmentCounter = 0;
+
+				do
+				{
+					int x1, y1, x2, y2;
+
+					if (segmentCounter == 0) // first segment
+					{
+
+						x1 = startX;
+						y1 = startY;
+
+
+
+						if (startX == linkPathPoints[0].X)
+						{
+
+							// vertical line segmant
+							lineOrientations.Add(false);
+
+							x2 = linkPathPoints[0].X;
+
+							if (lineStyle == EAAPI.LinkLineStyle.LineStyleOrthogonalRounded)
+							{
+								if (linkPathPoints[0].Y < startY)
+								{
+									y2 = linkPathPoints[0].Y + 10;
+								}
+								else
+								{
+									y2 = linkPathPoints[0].Y - 10;
+								}
+							}
+							else
+                            {
+								y2 = linkPathPoints[0].Y;
+                            }
+						}
+						else
+						{
+							// horizontal line segment
+							lineOrientations.Add(true);
+
+							y2 = linkPathPoints[0].Y;
+
+							if (lineStyle == EAAPI.LinkLineStyle.LineStyleOrthogonalRounded)
+							{
+								if (linkPathPoints[0].X < startX)
+								{
+									x2 = linkPathPoints[0].X + 10;
+								}
+								else
+								{
+									x2 = linkPathPoints[0].X - 10;
+								}
+							}
+							else
+                            {
+								x2 = linkPathPoints[0].X;
+                            }
+						}
+
+						if (lineStyle == EAAPI.LinkLineStyle.LineStyleOrthogonalRounded)
+						{
+							arcPoints.Add(new Point(x2, y2));
+						}
+					}
+					else if (segmentCounter == linkPathPoints.Count) // last segment
+					{
+
+						x2 = endX;
+						y2 = endY;
+
+						if (endX == linkPathPoints[linkPathPoints.Count - 1].X)
+						{
+							// vertical line segmant
+							lineOrientations.Add(false);
+
+							x1 = linkPathPoints[linkPathPoints.Count - 1].X;
+							if (lineStyle == EAAPI.LinkLineStyle.LineStyleOrthogonalRounded)
+							{
+								if (linkPathPoints[linkPathPoints.Count - 1].Y < endY)
+								{
+									y1 = linkPathPoints[linkPathPoints.Count - 1].Y + 10;
+								}
+								else
+								{
+									y1 = linkPathPoints[linkPathPoints.Count - 1].Y - 10;
+								}
+							}
+							else
+                            {
+								y1 = linkPathPoints[linkPathPoints.Count - 1].Y;
+                            }
+						}
+						else
+						{
+							// horizontal line segment
+							lineOrientations.Add(true);
+							y1 = linkPathPoints[linkPathPoints.Count - 1].Y;
+
+							if (lineStyle == EAAPI.LinkLineStyle.LineStyleOrthogonalRounded)
+							{
+								if (linkPathPoints[linkPathPoints.Count - 1].X < endX)
+								{
+									x1 = linkPathPoints[linkPathPoints.Count - 1].X + 10;
+								}
+								else
+								{
+									x1 = linkPathPoints[linkPathPoints.Count - 1].X - 10;
+								}
+							}
+							else
+                            {
+								x1 = linkPathPoints[linkPathPoints.Count - 1].X;
+                            }
+						}
+
+						if (lineStyle == EAAPI.LinkLineStyle.LineStyleOrthogonalRounded)
+						{
+							arcPoints.Add(new Point(x1, y1));
+						}
+					}
+					else // middle segment
+					{
+
+						Point bendPoint1 = linkPathPoints[segmentCounter - 1];
+						Point bendPoint2 = linkPathPoints[segmentCounter];
+
+						if (bendPoint1.X == bendPoint2.X)
+						{
+							// vertical line
+							lineOrientations.Add(false);
+
+							x1 = bendPoint1.X;
+							x2 = bendPoint2.X;
+
+							if (lineStyle == EAAPI.LinkLineStyle.LineStyleOrthogonalRounded)
+							{
+								if (bendPoint1.Y < bendPoint2.Y)
+								{
+									y1 = bendPoint1.Y + 10;
+									y2 = bendPoint2.Y - 10;
+								}
+								else
+								{
+									y1 = bendPoint1.Y - 10;
+									y2 = bendPoint2.Y + 10;
+								}
+							}
+							else
+                            {
+								y1 = bendPoint1.Y;
+								y2 = bendPoint2.Y;
+                            }
+						}
+						else
+						{
+							// horizontal line
+							lineOrientations.Add(true);
+
+							y1 = bendPoint1.Y;
+							y2 = bendPoint2.Y;
+
+							if (lineStyle == EAAPI.LinkLineStyle.LineStyleOrthogonalRounded)
+							{
+								if (bendPoint1.X < bendPoint2.X)
+								{
+									x1 = bendPoint1.X + 10;
+									x2 = bendPoint2.X - 10;
+								}
+								else
+								{
+									x1 = bendPoint1.X - 10;
+									x2 = bendPoint2.X + 10;
+								}
+							}
+							else
+                            {
+								x1 = bendPoint1.X;
+								x2 = bendPoint2.X;
+                            }
+
+						}
+
+						if (lineStyle == EAAPI.LinkLineStyle.LineStyleOrthogonalRounded)
+						{
+							arcPoints.Add(new Point(x1, y1));
+							arcPoints.Add(new Point(x2, y2));
+						}
+					}
+
+					segmentPoints.Add(new Point
+					{
+						X = x1,
+						Y = y1
+					});
+					segmentPoints.Add(new Point
+					{
+						X = x2,
+						Y = y2
+					});
+
+					if(x1 > _maxX)
+                    {
+						_maxX = x1;
+                    }
+
+					if(x2 > _maxX)
+                    {
+						_maxX = x2;
+                    }
+
+					segmentCounter++;
+
+				} while (segmentCounter <= linkPathPoints.Count);
+
+
+				
 			}
 		}
 
@@ -666,9 +855,12 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 			return result;
 		}
 
-		private void ConvertDiagramElements(EAAPI.Diagram diagram, ref ScalableVectorGraphics result)
+		private void ConvertDiagramElements(EAAPI.Diagram diagram, ref Group result)
 		{
 			NumberFormatInfo usFormat = CultureInfo.GetCultureInfo("en-US").NumberFormat;
+
+			 
+
 
 			List<SvgElement> elements = new List<SvgElement>();
 
@@ -680,214 +872,31 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 				EAAPI.Element element = _repository.GetElementByID(diagramObject.ElementID);
 
+				Group elementGroup = new Group();
+
+				elementGroup.ID = diagramObject.InstanceGUID.ToString();
+
+				elementGroup.Class = "specif-resource-diagram-element";
+
+				elementGroup.Metadata = new Metadata();
+
+				elementGroup.Metadata.ResourceDiagramElement = new ResourceDiagramElement
+				{
+					Bounds = new Bounds(),
+					IdReference = GetSpecIfIdentifier(element.ElementGUID),
+					RevisionReference = GetRevisonFromDate(element.Modified)
+				};
+
 				string elementType = element.Type;
 				string elementStereotype = element.Stereotype;
 
-				if (elementType == "Port")
-				{
-					double middleX = (double)diagramObject.left + (((double)diagramObject.right - (double)diagramObject.left) / 2);
-					double middleY = Math.Abs((double)(-diagramObject.top) + ((Math.Abs((double)-diagramObject.bottom) - Math.Abs((double)-diagramObject.top)) / 2));
+				ElementShape elementShape = ElementShapeFactory.GetElementShape(element, _repository);
 
-					double radiusX = (((double)diagramObject.right - (double)diagramObject.left) / 2);
-					double radiusY = ((Math.Abs((double)diagramObject.bottom) - Math.Abs((double)diagramObject.top)) / 2);
-
-					Group portGroup = new Group();
-					portGroup.Sequence = diagramObject.Sequence;
-					portGroup.Metadata.EaType = element.Type;
-
-					Circle circle = new Circle()
-					{
-						Cx = middleX.ToString(usFormat),
-						Cy = middleY.ToString(usFormat),
-						Radius = radiusX.ToString(usFormat),
-
-						Fill = "white",
-						Stroke = "black",
-						StrokeWidth = "2"
-					};
-
-					if(middleX + 8 > _maxX)
-					{
-						_maxX = (int)(middleX + 8);
-					}
-
-					portGroup.Circles.Add(circle);
-
-					// port label
-					Point labelSize = diagramObject.GetLabelSize();
-					Point labelOffset = diagramObject.GetLabelOffset();
-					
-					string classifierName = element.GetClassifierName(_repository);
-					string name = element.Name;
-
-					string nameTextToShow = classifierName;
-					if (name != "")
-					{
-						nameTextToShow = name + ": " + classifierName;
-					}
-
-					logger.Debug(nameTextToShow + " sizeX = " + labelSize.X + ", sizeY = " + labelSize.Y + ", offsetX = " + labelOffset.X + ", offseetY = " + labelOffset.Y);
+				double middleX = (double)diagramObject.left + (((double)diagramObject.right - (double)diagramObject.left) / 2);
+				double middleY = Math.Abs((double)(-diagramObject.top) + ((Math.Abs((double)-diagramObject.bottom) - Math.Abs((double)-diagramObject.top)) / 2));
 
 
-					List<string> textLines = CalculateTextLines(nameTextToShow, labelSize.X);
-
-					int labelWidth = labelSize.X;
-
-					int verticalTextLineDistance = 14;
-					if (textLines.Count > 0)
-					{
-						verticalTextLineDistance = labelSize.Y / textLines.Count;
-					}
-
-					
-
-					int n = 1;
-
-					foreach (string textLine in textLines)
-					{
-						float labelX;
-						float labelY;
-						float offsetX;
-						float offsetY;
-
-						if (labelOffset.X == 0 && labelOffset.Y == 0)
-						{
-							labelX = (diagramObject.left - (labelWidth / 2));
-
-							offsetX = 0;
-
-							// k = textLines.Count
-							labelY = (-diagramObject.top + ((n - (textLines.Count / 2)) * verticalTextLineDistance));
-							offsetY = 0;
-						}
-						else
-						{
-							labelX = (diagramObject.left + ((diagramObject.right - diagramObject.left) / 2) + labelWidth / 2);
-							offsetX = labelOffset.X - 10;
-
-							labelY = (-diagramObject.top + ((-diagramObject.bottom + diagramObject.top)/2)) + ((n - (textLines.Count / 2)) * verticalTextLineDistance);
-							offsetY = labelOffset.Y;
-						}
-						
-
-						if(labelX + labelWidth /2 > _maxX)
-						{
-							_maxX = (int)(labelX + labelWidth / 2);
-						}
-
-						Text nameText = new Text()
-						{
-							X = (labelX + offsetX).ToString(usFormat),
-							Y = (labelY + offsetY).ToString(usFormat),
-							TextAnchor = "middle",
-							Fill = "black",
-							FontFamily = "Verdana",
-							FontSize = "10",
-							InlineSize = (diagramObject.right - diagramObject.left).ToString(usFormat),
-							DisplayedText = textLine
-						};
-
-						portGroup.Texts.Add(nameText);
-						n++;
-					}
-
-					portElements.Add(portGroup);
-
-				}
-				else if(elementType == "Object" && (elementStereotype == "agent" || elementStereotype == "storage"))
-				{
-
-					int recatangleWidth = (diagramObject.right - diagramObject.left);
-
-					string strokeColor = "black";
-
-					Group objectGroup = new Group();
-
-					objectGroup.Sequence = diagramObject.Sequence;
-
-					if(element.Stereotype == "agent")
-					{
-						string typeTag = element.GetTaggedValueString("Type");
-						if(typeTag == "Chain")
-						{
-							strokeColor = "#FFA500";
-						}
-						else if(typeTag == "Software")
-						{
-							strokeColor = "#0000CD";
-						}
-						else if(typeTag == "Electronic")
-						{
-							strokeColor = "#228B22";
-						}
-						else if(typeTag == "Mechanical")
-						{
-							strokeColor = "#C0C0C0";
-						}
-					}
-
-					SVG.DataModels.Rectangle rectangle = new SVG.DataModels.Rectangle()
-					{
-						X = diagramObject.left.ToString(),
-						Y = "" + (diagramObject.top * -1),
-						Width = recatangleWidth.ToString(),
-						Height = ((diagramObject.bottom * -1) - (diagramObject.top * -1)).ToString(),
-						Fill = "white",
-						Stroke = strokeColor,
-						StrokeWidth = "2"
-						
-
-					};
-
-					if (element.Stereotype == "storage")
-					{
-						rectangle.HorizontalCornerRadius = "20";
-						rectangle.VerticalCornerRadius = "20";
-					}
-
-					if(diagramObject.left + recatangleWidth > _maxX)
-					{
-						_maxX = diagramObject.left + recatangleWidth;
-					}
-
-					objectGroup.Rectangles.Add(rectangle);
-
-					string classifierName = element.GetClassifierName(_repository);
-					string name = element.Name;
-
-					string nameTextToShow = classifierName;
-					if(name != "")
-					{
-						nameTextToShow = name + ": " + classifierName;
-					}
-
-					List<string> textLines = CalculateTextLines(nameTextToShow, recatangleWidth);
-
-					int lineOffset = 0;
-
-					foreach (string textLine in textLines)
-					{
-
-						Text nameText = new Text()
-						{
-							X = (diagramObject.left + ((diagramObject.right - diagramObject.left) / 2)).ToString(usFormat),
-							Y = (-diagramObject.top + 30 + lineOffset).ToString(usFormat),
-							TextAnchor = "middle",
-							Fill = "black",
-							FontFamily = "Verdana",
-							FontSize = "10",
-							InlineSize = (diagramObject.right - diagramObject.left).ToString(usFormat),
-							DisplayedText = textLine
-						};
-
-						objectGroup.Texts.Add(nameText);
-						lineOffset += 16;
-					}
-
-					elements.Add(objectGroup);
-
-				}
-				else if (elementType == "Actor" && (elementStereotype == "human agent"))
+				if (elementType == "Actor" && (elementStereotype == "human agent"))
 				{
 					int recatangleWidth = (diagramObject.right - diagramObject.left);
 					int rectangleHeight = (-diagramObject.bottom) - (-diagramObject.top);
@@ -895,9 +904,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 					int rectangleTop = -diagramObject.top;
 					int rectangleLeft = diagramObject.left;
 
-					Group humanAgentGroup = new Group();
-
-					humanAgentGroup.Sequence = diagramObject.Sequence;
+					elementGroup.Sequence = diagramObject.Sequence;
 
 					SVG.DataModels.Rectangle rectangle = new SVG.DataModels.Rectangle()
 					{
@@ -915,7 +922,12 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						_maxX = diagramObject.left + recatangleWidth;
 					}
 
-					humanAgentGroup.Rectangles.Add(rectangle);
+					elementGroup.Rectangles.Add(rectangle);
+
+					elementGroup.Metadata.ResourceDiagramElement.Bounds.X = diagramObject.left;
+					elementGroup.Metadata.ResourceDiagramElement.Bounds.Y = (diagramObject.top * -1);
+					elementGroup.Metadata.ResourceDiagramElement.Bounds.Width = recatangleWidth;
+					elementGroup.Metadata.ResourceDiagramElement.Bounds.Height = rectangleHeight;
 
 					float rowHeight = rectangleHeight / 6;
 					float columWidth = recatangleWidth / 6;
@@ -923,19 +935,19 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 					Circle circle = new Circle()
 					{
 						Cx = (rectangleLeft + (3 * columWidth)).ToString(usFormat),
-						Cy = (rectangleTop + (2*rowHeight)).ToString(usFormat),
+						Cy = (rectangleTop + (2 * rowHeight)).ToString(usFormat),
 						Radius = rowHeight.ToString(usFormat),
 						Fill = "none",
 						Stroke = "black",
 						StrokeWidth = "1"
 					};
 
-					humanAgentGroup.Circles.Add(circle);
+					elementGroup.Circles.Add(circle);
 
 					Line line1 = new Line()
 					{
-						X1 = (rectangleLeft + 3*columWidth).ToString(usFormat),
-						Y1 = (rectangleTop + 3*rowHeight).ToString(usFormat),
+						X1 = (rectangleLeft + 3 * columWidth).ToString(usFormat),
+						Y1 = (rectangleTop + 3 * rowHeight).ToString(usFormat),
 						X2 = (rectangleLeft + 3 * columWidth).ToString(usFormat),
 						Y2 = (rectangleTop + 4.5 * rowHeight).ToString(usFormat),
 						Fill = "none",
@@ -943,7 +955,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						StrokeWidth = "1"
 					};
 
-					humanAgentGroup.Lines.Add(line1);
+					elementGroup.Lines.Add(line1);
 
 					Line line2 = new Line()
 					{
@@ -956,7 +968,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						StrokeWidth = "1"
 					};
 
-					humanAgentGroup.Lines.Add(line2);
+					elementGroup.Lines.Add(line2);
 
 					Line line3 = new Line()
 					{
@@ -969,7 +981,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						StrokeWidth = "1"
 					};
 
-					humanAgentGroup.Lines.Add(line3);
+					elementGroup.Lines.Add(line3);
 
 					Line line4 = new Line()
 					{
@@ -982,7 +994,16 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						StrokeWidth = "1"
 					};
 
-					humanAgentGroup.Lines.Add(line4);
+					elementGroup.Lines.Add(line4);
+
+					string classifierName = element.GetClassifierName(_repository);
+					string name = element.Name;
+
+					string nameTextToShow = classifierName;
+					if (name != "")
+					{
+						nameTextToShow = name + ": " + classifierName;
+					}
 
 					Text nameText = new Text()
 					{
@@ -994,22 +1015,290 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						FontSize = "10",
 						FontWeight = "bold",
 						InlineSize = (diagramObject.right - diagramObject.left).ToString(usFormat),
-						DisplayedText = element.Name
+						DisplayedText = nameTextToShow
 					};
 
 
-					float textWidth = GetTextDimension(element.Name).Width;
+					float textWidth = GetTextDimension(nameTextToShow).Width;
 
-					if (diagramObject.left + textWidth/2 > _maxX)
+					if (diagramObject.left + textWidth / 2 > _maxX)
 					{
 						_maxX = (int)(diagramObject.left + textWidth / 2);
 					}
 
-					humanAgentGroup.Texts.Add(nameText);
+					elementGroup.Texts.Add(nameText);
 
-					elements.Add(humanAgentGroup);
+					elements.Add(elementGroup);
 				}
+				else
+				{
+					int elementWidth = (diagramObject.right - diagramObject.left);
 
+					if (elementShape.MainShape == "Rectangle")
+					{
+						int recatangleWidth = (diagramObject.right - diagramObject.left);
+
+						string strokeColor = elementShape.BorderColor;
+
+
+
+						elementGroup.Sequence = diagramObject.Sequence;
+
+						if (element.Stereotype == "agent")
+						{
+							string typeTag = element.GetTaggedValueString("Type");
+							if (typeTag == "Chain")
+							{
+								strokeColor = "#FFA500";
+							}
+							else if (typeTag == "Software")
+							{
+								strokeColor = "#0000CD";
+							}
+							else if (typeTag == "Electronic")
+							{
+								strokeColor = "#228B22";
+							}
+							else if (typeTag == "Mechanical")
+							{
+								strokeColor = "#C0C0C0";
+							}
+						}
+
+						SVG.DataModels.Rectangle rectangle = new SVG.DataModels.Rectangle()
+						{
+							X = diagramObject.left.ToString(),
+							Y = "" + (diagramObject.top * -1),
+							Width = recatangleWidth.ToString(),
+							Height = ((diagramObject.bottom * -1) - (diagramObject.top * -1)).ToString(),
+							Fill = elementShape.FillColor,
+							Stroke = strokeColor,
+							StrokeWidth = elementShape.BorderWidth.ToString()
+
+
+						};
+
+						if (elementShape.CornerRadius > 0)
+						{
+							rectangle.HorizontalCornerRadius = elementShape.CornerRadius.ToString();
+							rectangle.VerticalCornerRadius = elementShape.CornerRadius.ToString();
+						}
+
+						if(!string.IsNullOrEmpty(elementShape.StrokeDashArray))
+                        {
+							rectangle.StrokeDashArray = elementShape.StrokeDashArray;
+                        }
+
+						if (diagramObject.left + recatangleWidth > _maxX)
+						{
+							_maxX = diagramObject.left + recatangleWidth;
+						}
+
+						elementGroup.Rectangles.Add(rectangle);
+
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.X = diagramObject.left;
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.Y = (diagramObject.top * -1);
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.Width = recatangleWidth;
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.Height = ((diagramObject.bottom * -1) - (diagramObject.top * -1));
+						
+					}
+					else if (elementShape.MainShape == "Circle")
+					{
+
+						double radiusX = (((double)diagramObject.right - (double)diagramObject.left) / 2);
+						double radiusY = ((Math.Abs((double)diagramObject.bottom) - Math.Abs((double)diagramObject.top)) / 2);
+
+
+						elementGroup.Sequence = diagramObject.Sequence;
+						elementGroup.Metadata.EaType = element.Type;
+
+						Circle circle = new Circle()
+						{
+							Cx = middleX.ToString(usFormat),
+							Cy = middleY.ToString(usFormat),
+							Radius = radiusX.ToString(usFormat),
+
+							Fill = elementShape.FillColor,
+							Stroke = elementShape.BorderColor,
+							StrokeWidth = elementShape.BorderWidth.ToString()
+						};
+
+						if (!string.IsNullOrEmpty(elementShape.StrokeDashArray))
+						{
+							circle.StrokeDashArray = elementShape.StrokeDashArray;
+						}
+
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.X = middleX - radiusX;
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.Y = middleY - radiusY;
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.Width = 2 * radiusX;
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.Height = 2 * radiusY;
+
+						elementGroup.Circles.Add(circle);
+
+						elements.Add(elementGroup);
+					}
+					else if (elementShape.MainShape == "Ellipse")
+					{
+
+						double radiusX = (((double)diagramObject.right - (double)diagramObject.left) / 2);
+						double radiusY = ((Math.Abs((double)diagramObject.bottom) - Math.Abs((double)diagramObject.top)) / 2);
+
+
+						elementGroup.Sequence = diagramObject.Sequence;
+						elementGroup.Metadata.EaType = element.Type;
+
+						Ellipse ellipse = new Ellipse()
+						{
+							Cx = middleX.ToString(usFormat),
+							Cy = middleY.ToString(usFormat),
+							RadiusX = radiusX.ToString(usFormat),
+							RadiusY = radiusY.ToString(usFormat),
+
+							Fill = elementShape.FillColor,
+							Stroke = elementShape.BorderColor,
+							StrokeWidth = elementShape.BorderWidth.ToString()
+						};
+
+						if (!string.IsNullOrEmpty(elementShape.StrokeDashArray))
+						{
+							ellipse.StrokeDashArray = elementShape.StrokeDashArray;
+						}
+
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.X = middleX - radiusX;
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.Y = middleY - radiusY;
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.Width = 2 * radiusX;
+						elementGroup.Metadata.ResourceDiagramElement.Bounds.Height = 2 * radiusY;
+
+						elementGroup.Ellipses.Add(ellipse);
+
+                        
+					}
+
+					
+
+					if (elementType != "Port")
+                    {
+						List<string> textLines = CalculateTextLines(elementShape.MainLabel, elementWidth);
+
+						int lineOffset = 0;
+
+						foreach (string textLine in textLines)
+						{
+
+							Text nameText = new Text()
+							{
+								X = (diagramObject.left + ((diagramObject.right - diagramObject.left) / 2)).ToString(usFormat),
+								Y = (-diagramObject.top + 24 + lineOffset).ToString(usFormat),
+								TextAnchor = "middle",
+								Fill = "black",
+								FontFamily = "Verdana",
+								FontSize = "10",
+								FontWeight = elementShape.MainLabelFontWeight,
+								InlineSize = (diagramObject.right - diagramObject.left).ToString(usFormat),
+								DisplayedText = textLine
+							};
+
+							elementGroup.Texts.Add(nameText);
+							lineOffset += 16;
+						}
+
+						elements.Add(elementGroup);
+					}
+					else // special label placement for ports
+					{
+
+
+						if (middleX + 8 > _maxX)
+						{
+							_maxX = (int)(middleX + 8);
+						}
+
+
+
+						// port label
+						Point labelSize = diagramObject.GetLabelSize();
+						Point labelOffset = diagramObject.GetLabelOffset();
+
+						string classifierName = element.GetClassifierName(_repository);
+						string name = element.Name;
+
+						string nameTextToShow = classifierName;
+						if (name != "")
+						{
+							nameTextToShow = name + ": " + classifierName;
+						}
+
+						logger.Debug(nameTextToShow + " sizeX = " + labelSize.X + ", sizeY = " + labelSize.Y + ", offsetX = " + labelOffset.X + ", offseetY = " + labelOffset.Y);
+
+
+						List<string> textLines = CalculateTextLines(nameTextToShow, labelSize.X);
+
+						int labelWidth = labelSize.X;
+
+						int verticalTextLineDistance = 14;
+						if (textLines.Count > 0)
+						{
+							verticalTextLineDistance = labelSize.Y / textLines.Count;
+						}
+
+
+
+						int n = 1;
+
+						foreach (string textLine in textLines)
+						{
+							float labelX;
+							float labelY;
+							float offsetX;
+							float offsetY;
+
+							if (labelOffset.X == 0 && labelOffset.Y == 0)
+							{
+								labelX = (diagramObject.left - (labelWidth / 2));
+
+								offsetX = 0;
+
+								// k = textLines.Count
+								labelY = (-diagramObject.top + ((n - (textLines.Count / 2)) * verticalTextLineDistance));
+								offsetY = 0;
+							}
+							else
+							{
+								labelX = (diagramObject.left + ((diagramObject.right - diagramObject.left) / 2) + labelWidth / 2);
+								offsetX = labelOffset.X - 10;
+
+								labelY = (-diagramObject.top + ((-diagramObject.bottom + diagramObject.top) / 2)) + ((n - (textLines.Count / 2)) * verticalTextLineDistance);
+								offsetY = labelOffset.Y;
+							}
+
+
+							if (labelX + labelWidth / 2 > _maxX)
+							{
+								_maxX = (int)(labelX + labelWidth / 2);
+							}
+
+							Text nameText = new Text()
+							{
+								X = (labelX + offsetX).ToString(usFormat),
+								Y = (labelY + offsetY).ToString(usFormat),
+								TextAnchor = "middle",
+								Fill = "black",
+								FontFamily = "Verdana",
+								FontSize = "10",
+								InlineSize = (diagramObject.right - diagramObject.left).ToString(usFormat),
+								DisplayedText = textLine
+							};
+
+							elementGroup.Texts.Add(nameText);
+							n++;
+						}
+
+						portElements.Add(elementGroup);
+
+					}
+
+					
+				}
 			}
 
 			List<SvgElement> sortedElements = elements.OrderByDescending(el => el.Sequence).ToList();
@@ -1018,6 +1307,10 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 			foreach (SvgElement sortedElement in sortedElements)
 			{
+				if(sortedElement.Description == null)
+                {
+					sortedElement.Description = new Description();
+                }
 				sortedElement.Description.Text = sortedElement.Sequence.ToString();
 
 				//Console.WriteLine(sortedElement.Sequence);
@@ -1180,5 +1473,29 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 			return sizeOfString;
 		}
 	
+		private string GetSpecIfIdentifier(string eaGuid)
+        {
+			string result = eaGuid.Replace('-', '_');
+
+			result = result.Replace("{", "");
+			result = result.Replace("}", "");
+			result = "_" + result;
+
+			return result;
+		}
+
+		private string GetRevisonFromDate(DateTime changeDate)
+        {
+			string result = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "");
+
+			SHA1Managed sha1 = new SHA1Managed();
+
+			byte[] hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(changeDate.ToUniversalTime().ToString()));
+
+			result = string.Concat(hash.Select(b => b.ToString("x2")));
+
+			return result;
+		}
+
 	}
 }

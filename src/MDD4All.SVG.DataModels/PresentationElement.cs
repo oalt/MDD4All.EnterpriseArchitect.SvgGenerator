@@ -9,19 +9,17 @@ namespace MDD4All.SVG.DataModels
     {
         public PresentationElement()
         {
-            Title = new Title();
-            Description = new Description();
-            Metadata = new Metadata();
+            
         }
 
-        [XmlElement("title", IsNullable = true)]
-        public Title Title { get; set; }
+        [XmlElement("title")]
+        public Title Title { get; set; } = null;
 
-        [XmlElement("desc", IsNullable = true)]
-        public Description Description { get; set; }
+        [XmlElement("desc")]
+        public Description Description { get; set; } = null;
 
-        [XmlElement("metadata", IsNullable = true)]
-        public Metadata Metadata { get; set; }
+        [XmlElement("metadata")]
+        public Metadata Metadata { get; set; } = null;
 
         [XmlAttribute("fill")]
         public string Fill { get; set; }
@@ -34,5 +32,8 @@ namespace MDD4All.SVG.DataModels
 
         [XmlAttribute("stroke-linejoin")]
         public string StrokeLineJoin { get; set; }
+
+        [XmlAttribute("stroke-dasharray")]
+        public string StrokeDashArray { get; set; }
     }
 }

@@ -1,15 +1,15 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
-using log4net;
 using MDD4All.EnterpriseArchitect.SvgGenerator;
 using MDD4All.SVG.DataModels;
+using NLog;
 
 namespace MDD4All.SVG.Tests
 {
     public class Test2
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(Test2));
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         public Test2()
         {
@@ -17,7 +17,7 @@ namespace MDD4All.SVG.Tests
 
             //bool openResult = repository.OpenFile(@"C:\Users\olli\Documents\EA\SVGTest.EAP");
 
-            bool openResult = repository.OpenFile(@"C:\Users\olli\Documents\EA\FMC4EA.EAP");
+            bool openResult = repository.OpenFile(@"D:\work\github\fmc4se\Models\FMC4EA.EAP");
 
 
 
@@ -31,7 +31,7 @@ namespace MDD4All.SVG.Tests
 
                 ScalableVectorGraphics svg = converter.ConvertDiagramToSVG(diagram);
 
-                svg.SaveToFile(@"c:\test\svg\test3.svg");
+                svg.SaveToFile(@"d:\test\svg\test3.svg");
 
 
 

@@ -66,9 +66,14 @@ namespace MDD4All.SVG.DataModels
 
         public void SaveToFile(string filename)
         {
+            XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+            namespaces.Add("di", "http://www.omg.org/spec/DD/20100524/DI");
+            namespaces.Add("dc", "http://www.omg.org/spec/DD/20100524/DC");
+            namespaces.Add("specif", "http://specif.de");
+
             XmlSerializer serializer = new XmlSerializer(typeof(ScalableVectorGraphics));
             TextWriter writer = new StreamWriter(filename);
-            serializer.Serialize(writer, this);
+            serializer.Serialize(writer, this, namespaces);
             writer.Close();
         }
     }

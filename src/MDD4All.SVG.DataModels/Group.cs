@@ -20,6 +20,12 @@ namespace MDD4All.SVG.DataModels
             Lines = new List<Line>();
         }
 
+        [XmlAttribute("id")]
+        public string ID { get; set; } = null;
+
+        [XmlAttribute("class")]
+        public string Class { get; set; } = null;
+
         [XmlElement("g")]
         public List<Group> Groups { get; set; }
 
@@ -28,6 +34,9 @@ namespace MDD4All.SVG.DataModels
 
         [XmlElement("circle")]
         public List<Circle> Circles { get; set; }
+
+        [XmlElement("ellipse")]
+        public List<Ellipse> Ellipses { get; set; } = new List<Ellipse>();
 
         [XmlElement("polyline")]
         public List<Polyline> Polylines { get; set; }
@@ -40,5 +49,6 @@ namespace MDD4All.SVG.DataModels
 
         [XmlElement("line")]
         public List<Line> Lines { get; set; }
+
     }
 }
