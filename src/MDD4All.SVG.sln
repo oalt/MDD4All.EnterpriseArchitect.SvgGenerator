@@ -3,22 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDD4All.SVG.DataModels", "MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj", "{ABCEE577-3671-4410-91F9-EADDEB315197}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SVG.DataModels", "MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj", "{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDD4All.EnterpriseArchitect.SvgGenerator", "MDD4All.EnterpriseArchitect.SvgGenerator\MDD4All.EnterpriseArchitect.SvgGenerator.csproj", "{4B2EAC12-28D3-4703-AE8D-7D223108F3C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.EnterpriseArchitect.SvgGenerator", "MDD4All.EnterpriseArchitect.SvgGenerator\MDD4All.EnterpriseArchitect.SvgGenerator.csproj", "{31750FAF-22AE-4924-8E48-AA51E2B9BC46}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataModels.DiagramInterchange", "MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj", "{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDD4All.SVG.Tests", "MDD4All.SVG.Tests\MDD4All.SVG.Tests.csproj", "{6B6C0C35-9AE2-4567-930D-F4B629F57580}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D5554AFE-E62E-4ACB-B641-6D3FC58C668F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8A38CEFE-AA36-4744-9E41-4632BA39D4BB}"
 	ProjectSection(SolutionItems) = preProject
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
-		build.xml = build.xml
-		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 		version.txt = version.txt
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDD4All.SpecIF.DataModels.DiagramInterchange", "MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj", "{9B488EA8-1E09-4B05-B8CE-A474D38D02F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,27 +24,27 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ABCEE577-3671-4410-91F9-EADDEB315197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABCEE577-3671-4410-91F9-EADDEB315197}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABCEE577-3671-4410-91F9-EADDEB315197}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABCEE577-3671-4410-91F9-EADDEB315197}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B2EAC12-28D3-4703-AE8D-7D223108F3C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B2EAC12-28D3-4703-AE8D-7D223108F3C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B2EAC12-28D3-4703-AE8D-7D223108F3C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B2EAC12-28D3-4703-AE8D-7D223108F3C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31750FAF-22AE-4924-8E48-AA51E2B9BC46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31750FAF-22AE-4924-8E48-AA51E2B9BC46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31750FAF-22AE-4924-8E48-AA51E2B9BC46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31750FAF-22AE-4924-8E48-AA51E2B9BC46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6B6C0C35-9AE2-4567-930D-F4B629F57580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B6C0C35-9AE2-4567-930D-F4B629F57580}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B6C0C35-9AE2-4567-930D-F4B629F57580}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B6C0C35-9AE2-4567-930D-F4B629F57580}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9B488EA8-1E09-4B05-B8CE-A474D38D02F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9B488EA8-1E09-4B05-B8CE-A474D38D02F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9B488EA8-1E09-4B05-B8CE-A474D38D02F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9B488EA8-1E09-4B05-B8CE-A474D38D02F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {9394EA1D-8239-4ABB-90B3-1FCC0B886182}
+		SolutionGuid = {FCDD1523-DC86-4B44-90D1-A616830A3A7F}
 	EndGlobalSection
 EndGlobal
