@@ -6,18 +6,30 @@ using System.Collections.Generic;
 using System.Linq;
 using MDD4All.SVG.DataModels;
 using MDD4All.SVG.DataModels.Extensions;
+#if EA_FACADE
+using EAAPI = MDD4All.EAFacade.DataModels.Contracts;
+using MDD4All.EAFacade.SvgGenerator.DataModels;
+using MDD4All.EAFacade.Manipulations;
+#else
 using EAAPI = EA;
+using MDD4All.EnterpriseArchitect.SvgGenerator.DataModels;
+using MDD4All.EnterpriseArchitect.Manipulations;
+#endif
 using System.Globalization;
 using System.Drawing;
-using MDD4All.EnterpriseArchitect.Manipulations;
+
 using NLog;
 using MDD4All.SpecIF.DataModels.DiagramInterchange;
 using MDD4All.SpecIF.DataModels.DiagramInterchange.DiagramDefinition;
 using System.Security.Cryptography;
 using System.Text;
-using MDD4All.EnterpriseArchitect.SvgGenerator.DataModels;
 
+
+#if EA_FACADE
+namespace MDD4All.EAFacade.SvgGenerator
+#else
 namespace MDD4All.EnterpriseArchitect.SvgGenerator
+#endif
 {
 	public class DiagramToSvgConverter
 	{

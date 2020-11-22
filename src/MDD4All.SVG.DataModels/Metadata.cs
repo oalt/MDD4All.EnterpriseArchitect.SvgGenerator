@@ -11,10 +11,10 @@ namespace MDD4All.SVG.DataModels
         [XmlElement("eaType")]
         public string EaType { get; set; }
 
-        [XmlElement("resourceDiagramElement", Namespace = "http://specif.de")]
+        [XmlElement("resourceDiagramElement", Namespace = "https://specif.de/schema/v1.0/DI")]
         public ResourceDiagramElement ResourceDiagramElement { get; set; } = null;
 
-        [XmlElement("statementDiagramElement", Namespace = "http://specif.de")]
+        [XmlElement("statementDiagramElement", Namespace = "https://specif.de/schema/v1.0/DI")]
         public StatementDiagramElement StatementDiagramElement { get; set; } = null;
     }
 }

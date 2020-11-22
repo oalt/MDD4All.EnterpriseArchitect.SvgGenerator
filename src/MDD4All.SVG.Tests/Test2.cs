@@ -1,9 +1,18 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
-using MDD4All.EnterpriseArchitect.SvgGenerator;
+
 using MDD4All.SVG.DataModels;
 using NLog;
+#if EA_FACADE
+using EAAPI = MDD4All.EAFacade.DataModels.Contracts;
+using EAC = MDD4All.EnterpriseArchitect.CachedDataProvider;
+using MDD4All.EAFacade.SvgGenerator;
+#else
+using EAAPI = EA;
+using MDD4All.EnterpriseArchitect.SvgGenerator;
+using EAC = EA;
+#endif
 
 namespace MDD4All.SVG.Tests
 {
@@ -13,7 +22,11 @@ namespace MDD4All.SVG.Tests
 
         public Test2()
         {
-            EA.Repository repository = new EA.Repository();
+#if EA_FACADE
+            EAC.EaCachedRepository repository = new EAC.EaCachedRepository();
+#else
+            EAAPI.Repository repository = new EAAPI.Repository();
+#endif
 
             //bool openResult = repository.OpenFile(@"C:\Users\olli\Documents\EA\SVGTest.EAP");
 
@@ -25,7 +38,7 @@ namespace MDD4All.SVG.Tests
             {
                 logger.Debug("Modell offen");
 
-                EA.Diagram diagram = repository.GetDiagramByID(20);
+                EAAPI.Diagram diagram = repository.GetDiagramByID(20);
 
                 DiagramToSvgConverter converter = new DiagramToSvgConverter(repository);
 

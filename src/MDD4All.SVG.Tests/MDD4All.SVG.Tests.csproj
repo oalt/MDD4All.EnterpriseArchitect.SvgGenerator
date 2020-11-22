@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -38,6 +38,12 @@
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>..\libs\Interop.EA.dll</HintPath>
+    </Reference>
+    <Reference Include="MDD4All.EAFacade.DataModels.Contracts, Version=2.1.0.183, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EAFacade.DataModels.Contracts.2.1.0.183\lib\netstandard2.0\MDD4All.EAFacade.DataModels.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="MDD4All.EAFacade.Manipulations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EAFacade.Manipulations.3.0.0.185\lib\netstandard2.0\MDD4All.EAFacade.Manipulations.dll</HintPath>
     </Reference>
     <Reference Include="MDD4All.EnterpriseArchitect.Manipulations, Version=2.4.0.116, Culture=neutral, PublicKeyToken=7775311d0fab0175, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.EnterpriseArchitect.Manipulations.2.4.0.116\lib\net40\MDD4All.EnterpriseArchitect.Manipulations.dll</HintPath>
@@ -69,8 +75,12 @@
     <Compile Include="Test2.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MDD4All.EnterpriseArchitect.SvgGenerator\MDD4All.EAFacade.SvgGenerator.csproj">
+      <Project>{6dfd228b-254a-4d0d-84cc-02abf4801bfa}</Project>
+      <Name>MDD4All.EAFacade.SvgGenerator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MDD4All.EnterpriseArchitect.SvgGenerator\MDD4All.EnterpriseArchitect.SvgGenerator.csproj">
-      <Project>{4b2eac12-28d3-4703-ae8d-7d223108f3c0}</Project>
+      <Project>{31750faf-22ae-4924-8e48-aa51e2b9bc46}</Project>
       <Name>MDD4All.EnterpriseArchitect.SvgGenerator</Name>
     </ProjectReference>
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj">

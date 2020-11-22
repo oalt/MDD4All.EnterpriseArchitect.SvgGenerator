@@ -1,12 +1,23 @@
-﻿using MDD4All.EnterpriseArchitect.SvgGenerator.DataModels;
-using NLog;
+﻿using NLog;
 using System;
 using System.Collections.Generic;
 using System.Text;
+#if EA_FACADE
+using EAAPI = MDD4All.EAFacade.DataModels.Contracts;
+using MDD4All.EAFacade.SvgGenerator.DataModels;
+using MDD4All.EAFacade.Manipulations;
+#else
 using EAAPI = EA;
+using MDD4All.EnterpriseArchitect.SvgGenerator.DataModels;
 using MDD4All.EnterpriseArchitect.Manipulations;
+#endif
 
+
+#if EA_FACADE
+namespace MDD4All.EAFacade.SvgGenerator
+#else
 namespace MDD4All.EnterpriseArchitect.SvgGenerator
+#endif
 {
     public class ElementShapeFactory
     {
