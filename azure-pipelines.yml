@@ -54,6 +54,7 @@ steps:
     command: 'pack'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
     projects: '**/*.sln'
+    nobuild: true
     arguments: '-c $(buildConfiguration)' 
     versioningScheme: byEnvVar
     versionEnvVar: build.buildnumber
