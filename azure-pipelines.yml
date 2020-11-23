@@ -45,14 +45,25 @@ steps:
     projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: 'src/MDD4All.SVG.sln'
+
+- task: DotNetCoreCLI@2
   displayName: 'Pack SVG generator'
   inputs:
     command: 'pack'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
     projects: 'src/MDD4All.SVG.sln'
+    nobuild: true
     arguments: '-c $(buildConfiguration)' 
     versioningScheme: byEnvVar
     versionEnvVar: build.buildnumber
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: 'src/MDD4All.SVG.EAFacade.sln'
 
 - task: DotNetCoreCLI@2
   displayName: 'Pack SVG generator (Facade)'
@@ -60,6 +71,7 @@ steps:
     command: 'pack'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
     projects: 'src/MDD4All.SVG.EAFacade.sln'
+    nobuild: true
     arguments: '-c $(buildConfiguration)' 
     versioningScheme: byEnvVar
     versionEnvVar: build.buildnumber
