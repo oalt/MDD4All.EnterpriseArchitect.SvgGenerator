@@ -48,6 +48,7 @@ steps:
   inputs:
     command: 'build'
     projects: 'src/MDD4All.SVG.sln'
+    arguments: '-c $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: 'Pack SVG generator'
@@ -64,6 +65,7 @@ steps:
   inputs:
     command: 'build'
     projects: 'src/MDD4All.SVG.EAFacade.sln'
+    arguments: '-c $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: 'Pack SVG generator (Facade)'
