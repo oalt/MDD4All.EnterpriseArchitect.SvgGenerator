@@ -79,10 +79,6 @@
       <Project>{6dfd228b-254a-4d0d-84cc-02abf4801bfa}</Project>
       <Name>MDD4All.EAFacade.SvgGenerator</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MDD4All.EnterpriseArchitect.SvgGenerator\MDD4All.EnterpriseArchitect.SvgGenerator.csproj">
-      <Project>{31750faf-22ae-4924-8e48-aa51e2b9bc46}</Project>
-      <Name>MDD4All.EnterpriseArchitect.SvgGenerator</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj">
       <Project>{9b488ea8-1e09-4b05-b8ce-a474d38d02f1}</Project>
       <Name>MDD4All.SpecIF.DataModels.DiagramInterchange</Name>
