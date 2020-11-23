@@ -46,12 +46,16 @@ steps:
 
 - task: DotNetCoreCLI@2
   inputs:
-    command: 'pack'
-    packDirectory: '$(Build.ArtifactStagingDirectory)'
-    projects: '**/*.csproj;!**/*Test*.csproj'
-    arguments: '-c $(buildConfiguration)' 
-    versioningScheme: byEnvVar
-    versionEnvVar: build.buildnumber
+    command: 'build'
+    projects: '**/*.csproj'
+
+- task: NuGetCommand@2
+  inputs:
+    command: pack
+    packagesToPack: '**/*.csproj;!**/*Test*.csproj'
+    versioningScheme: byBuildNumber
+    packDestination: '$(Build.ArtifactStagingDirectory)'
+    configuration: '$(buildConfiguration)'
 
 - task: PublishBuildArtifacts@1
   inputs:
