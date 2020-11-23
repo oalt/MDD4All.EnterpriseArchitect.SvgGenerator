@@ -45,16 +45,21 @@ steps:
     projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/*.sln'
-
-- task: DotNetCoreCLI@2
+  displayName: 'Pack SVG generator'
   inputs:
     command: 'pack'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
-    projects: '**/*.sln'
-    nobuild: true
+    projects: 'src/MDD4All.SVG.sln'
+    arguments: '-c $(buildConfiguration)' 
+    versioningScheme: byEnvVar
+    versionEnvVar: build.buildnumber
+
+- task: DotNetCoreCLI@2
+  displayName: 'Pack SVG generator (Facade)'
+  inputs:
+    command: 'pack'
+    packDirectory: '$(Build.ArtifactStagingDirectory)'
+    projects: 'src/MDD4All.SVG.EAFacade.sln'
     arguments: '-c $(buildConfiguration)' 
     versioningScheme: byEnvVar
     versionEnvVar: build.buildnumber
