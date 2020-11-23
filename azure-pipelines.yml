@@ -48,7 +48,7 @@ steps:
   inputs:
     command: 'pack'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
-    projects: '**/*.sln'
+    projects: '**/*.csproj;!**/*Test*.csproj'
     arguments: '-c $(buildConfiguration)' 
     versioningScheme: byEnvVar
     versionEnvVar: build.buildnumber
