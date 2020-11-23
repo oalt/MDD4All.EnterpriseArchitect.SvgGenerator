@@ -55,7 +55,7 @@ steps:
   inputs:
     command: 'pack'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
-    packagesToPack: '!**/*EAFacade*.csproj;**/*.csproj'
+    packagesToPack: 'src/MDD4All.SVG.sln'
     nobuild: true
     arguments: '-c $(buildConfiguration)' 
     versioningScheme: byEnvVar
@@ -73,7 +73,7 @@ steps:
   inputs:
     command: 'pack'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
-    packagesToPack: '!**/*EnterpriseArchitect*.csproj;**/*.csproj'
+    packagesToPack: 'src/MDD4All.SVG.EAFacade.sln'
     nobuild: true
     arguments: '-c $(buildConfiguration)' 
     versioningScheme: byEnvVar
