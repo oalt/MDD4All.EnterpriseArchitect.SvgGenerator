@@ -49,13 +49,14 @@ steps:
     command: 'build'
     projects: '**/*.sln'
 
-- task: NuGetCommand@2
+- task: DotNetCoreCLI@2
   inputs:
-    command: pack
-    packagesToPack: '**/*.csproj;!**/*Test*.csproj'
-    versioningScheme: byBuildNumber
-    packDestination: '$(Build.ArtifactStagingDirectory)'
-    configuration: '$(buildConfiguration)'
+    command: 'pack'
+    packDirectory: '$(Build.ArtifactStagingDirectory)'
+    projects: '**/*.sln'
+    arguments: '-c $(buildConfiguration)' 
+    versioningScheme: byEnvVar
+    versionEnvVar: build.buildnumber
 
 - task: PublishBuildArtifacts@1
   inputs:
