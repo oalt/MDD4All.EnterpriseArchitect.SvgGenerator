@@ -55,11 +55,12 @@ steps:
   inputs:
     command: 'pack'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
-    projects: 'src/MDD4All.SVG.sln'
+    packagesToPack: '!**/*EAFacade*.csproj;**/*.csproj'
     nobuild: true
     arguments: '-c $(buildConfiguration)' 
     versioningScheme: byEnvVar
     versionEnvVar: build.buildnumber
+    verbosityPack: 'normal'
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -72,11 +73,12 @@ steps:
   inputs:
     command: 'pack'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
-    projects: 'src/MDD4All.SVG.EAFacade.sln'
+    packagesToPack: '!**/*EnterpriseArchitect*.csproj;**/*.csproj'
     nobuild: true
     arguments: '-c $(buildConfiguration)' 
     versioningScheme: byEnvVar
     versionEnvVar: build.buildnumber
+    verbosityPack: 'normal'
 
 - task: PublishBuildArtifacts@1
   inputs:
