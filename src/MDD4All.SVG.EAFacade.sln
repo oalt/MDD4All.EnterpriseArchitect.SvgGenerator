@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SVG.DataModels", "MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj", "{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataModels.DiagramInterchange", "MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj", "{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8A38CEFE-AA36-4744-9E41-4632BA39D4BB}"
 	ProjectSection(SolutionItems) = preProject
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
@@ -32,10 +30,6 @@ Global
 		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6DFD228B-254A-4D0D-84CC-02ABF4801BFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6DFD228B-254A-4D0D-84CC-02ABF4801BFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DFD228B-254A-4D0D-84CC-02ABF4801BFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -46,7 +40,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF} = {B2409F1E-88DE-4A96-9C61-16F28E6F7CE5}
-		{63874BB0-EBEF-4E86-8B55-BDE3AFFF15DE} = {B2409F1E-88DE-4A96-9C61-16F28E6F7CE5}
 		{6DFD228B-254A-4D0D-84CC-02ABF4801BFA} = {026335AB-A9FF-4DCC-BC26-8AA213A17122}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
