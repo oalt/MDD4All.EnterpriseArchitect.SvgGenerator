@@ -10,10 +10,12 @@ using MDD4All.SVG.DataModels.Extensions;
 using EAAPI = MDD4All.EAFacade.DataModels.Contracts;
 using MDD4All.EAFacade.SvgGenerator.DataModels;
 using MDD4All.EAFacade.Manipulations;
+using MDD4All.EAFacade.SvgGenerator.Contracts;
 #else
 using EAAPI = EA;
 using MDD4All.EnterpriseArchitect.SvgGenerator.DataModels;
 using MDD4All.EnterpriseArchitect.Manipulations;
+using MDD4All.EnterpriseArchitect.SvgGenerator.Contracts;
 #endif
 using System.Globalization;
 using System.Drawing;
@@ -21,7 +23,7 @@ using System.Drawing;
 using NLog;
 using System.Security.Cryptography;
 using System.Text;
-using MDD4All.EnterpriseArchitect.SvgGenerator.Contracts;
+
 
 
 #if EA_FACADE
