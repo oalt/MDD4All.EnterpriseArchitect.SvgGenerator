@@ -19,7 +19,7 @@ namespace MDD4All.SVG.DataModels
         public Description Description { get; set; } = null;
 
         [XmlElement("metadata")]
-        public Metadata Metadata { get; set; } = null;
+        public object Metadata { get; set; } = null;
 
         [XmlAttribute("fill")]
         public string Fill { get; set; }

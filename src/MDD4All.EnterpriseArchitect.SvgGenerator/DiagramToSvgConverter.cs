@@ -19,10 +19,9 @@ using System.Globalization;
 using System.Drawing;
 
 using NLog;
-using MDD4All.SpecIF.DataModels.DiagramInterchange;
-using MDD4All.SpecIF.DataModels.DiagramInterchange.DiagramDefinition;
 using System.Security.Cryptography;
 using System.Text;
+using MDD4All.EnterpriseArchitect.SvgGenerator.Contracts;
 
 
 #if EA_FACADE
@@ -38,11 +37,14 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 		private int _maxX = 0;
 		//private int _maxY = 0;
 
-		EAAPI.Repository _repository;
+		private EAAPI.Repository _repository;
 
-		public DiagramToSvgConverter(EAAPI.Repository repository)
+		private IMetaDataCreator _metaDataCreator;
+
+		public DiagramToSvgConverter(EAAPI.Repository repository, IMetaDataCreator metaDataCreator = null)
 		{
 			_repository = repository;
+			_metaDataCreator = metaDataCreator;
 		}
 
 		public ScalableVectorGraphics ConvertDiagramToSVG(EAAPI.Diagram diagram)
@@ -58,7 +60,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 			Group diagramCanvasGroup = new Group();
 
-			diagramCanvasGroup.Metadata = new Metadata();
+			diagramCanvasGroup.Metadata = null;
 
 			diagramCanvasGroup.Title = new Title();
 
@@ -73,17 +75,10 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 			_maxX += 10;
 			result.Width = _maxX.ToString();
 
-			diagramCanvasGroup.Metadata.ResourceDiagramElement = new ResourceDiagramElement
+			if (_metaDataCreator != null)
 			{
-				IdReference = GetSpecIfIdentifier(diagram.DiagramGUID),
-				RevisionReference = GetRevisonFromDate(diagram.ModifiedDate),
-				Bounds = new Bounds
-                {
-					X = 0,
-					Y = 0,
-					Width = _maxX
-                }
-			};
+				diagramCanvasGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagram(diagram, diagram.cy, _maxX);
+			}
 
 			result.Groups.Add(diagramCanvasGroup);
 
@@ -104,14 +99,9 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 				lineGroup.Class = "specif-statement-diagram-element";
 
-				lineGroup.Metadata = new Metadata();
+				lineGroup.Metadata = null;
 
-				lineGroup.Metadata.StatementDiagramElement = new StatementDiagramElement
-				{
-					Waypoints = new List<Waypoint>(),
-					IdReference = GetSpecIfIdentifier(connector.ConnectorGUID),
-					RevisionReference = null
-				};
+				
 
 				string connectorType = connector.Type;
 
@@ -128,7 +118,11 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 					EAAPI.DiagramObject targetDiagramObject = GetDiagramObjectForElement(targetElement.ElementID, diagram);
 
 
-
+					if (_metaDataCreator != null)
+					{
+						lineGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagramLink(diagramLink, connector,
+																						   sourceElement, targetElement);
+					}
 
 					bool startArrow = false;
 					bool endArrow = false;
@@ -312,26 +306,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
                         
 					}
 
-                    lineGroup.Metadata.StatementDiagramElement.Waypoints.Add(new Waypoint
-                    {
-                        X = startX,
-                        Y = startY
-                    });
-
-                    foreach (Point bendPoint in linkPathPoints)
-                    {
-                        lineGroup.Metadata.StatementDiagramElement.Waypoints.Add(new Waypoint
-                        {
-                            X = bendPoint.X,
-                            Y = bendPoint.Y
-                        });
-                    }
-
-                    lineGroup.Metadata.StatementDiagramElement.Waypoints.Add(new Waypoint
-                    {
-                        X = endX,
-                        Y = endY
-                    });
+                    
 
                     #region ARCS
 
@@ -890,14 +865,12 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 				elementGroup.Class = "specif-resource-diagram-element";
 
-				elementGroup.Metadata = new Metadata();
+				elementGroup.Metadata = null;
 
-				elementGroup.Metadata.ResourceDiagramElement = new ResourceDiagramElement
+				if (_metaDataCreator != null)
 				{
-					Bounds = new Bounds(),
-					IdReference = GetSpecIfIdentifier(element.ElementGUID),
-					RevisionReference = GetRevisonFromDate(element.Modified)
-				};
+					elementGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagramObject(diagramObject, element);
+				}
 
 				string elementType = element.Type;
 				string elementStereotype = element.Stereotype;
@@ -936,10 +909,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 					elementGroup.Rectangles.Add(rectangle);
 
-					elementGroup.Metadata.ResourceDiagramElement.Bounds.X = diagramObject.left;
-					elementGroup.Metadata.ResourceDiagramElement.Bounds.Y = (diagramObject.top * -1);
-					elementGroup.Metadata.ResourceDiagramElement.Bounds.Width = recatangleWidth;
-					elementGroup.Metadata.ResourceDiagramElement.Bounds.Height = rectangleHeight;
+					
 
 					float rowHeight = rectangleHeight / 6;
 					float columWidth = recatangleWidth / 6;
@@ -1108,10 +1078,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 						elementGroup.Rectangles.Add(rectangle);
 
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.X = diagramObject.left;
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.Y = (diagramObject.top * -1);
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.Width = recatangleWidth;
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.Height = ((diagramObject.bottom * -1) - (diagramObject.top * -1));
+						
 						
 					}
 					else if (elementShape.MainShape == "Circle")
@@ -1122,7 +1089,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 
 						elementGroup.Sequence = diagramObject.Sequence;
-						elementGroup.Metadata.EaType = element.Type;
+						//elementGroup.Metadata.EaType = element.Type;
 
 						Circle circle = new Circle()
 						{
@@ -1140,10 +1107,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 							circle.StrokeDashArray = elementShape.StrokeDashArray;
 						}
 
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.X = middleX - radiusX;
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.Y = middleY - radiusY;
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.Width = 2 * radiusX;
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.Height = 2 * radiusY;
+						
 
 						elementGroup.Circles.Add(circle);
 
@@ -1157,7 +1121,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 
 						elementGroup.Sequence = diagramObject.Sequence;
-						elementGroup.Metadata.EaType = element.Type;
+						//elementGroup.Metadata.EaType = element.Type;
 
 						Ellipse ellipse = new Ellipse()
 						{
@@ -1176,14 +1140,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 							ellipse.StrokeDashArray = elementShape.StrokeDashArray;
 						}
 
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.X = middleX - radiusX;
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.Y = middleY - radiusY;
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.Width = 2 * radiusX;
-						elementGroup.Metadata.ResourceDiagramElement.Bounds.Height = 2 * radiusY;
-
 						elementGroup.Ellipses.Add(ellipse);
-
-                        
 					}
 
 					
