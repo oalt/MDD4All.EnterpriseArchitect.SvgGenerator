@@ -19,6 +19,8 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator.Contracts
 
         object CreateMetaDataForDiagramLink(EAAPI.DiagramLink diagramLink,
                                             EAAPI.Connector connector,
+                                            EAAPI.DiagramObject sourceDiagramObject,
+                                            EAAPI.DiagramObject targetDiagramObject,
                                             EAAPI.Element sourceElement,
                                             EAAPI.Element targetElement);
     }

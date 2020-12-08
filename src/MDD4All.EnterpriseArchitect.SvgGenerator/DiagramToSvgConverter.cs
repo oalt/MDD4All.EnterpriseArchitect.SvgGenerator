@@ -122,8 +122,12 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 					if (_metaDataCreator != null)
 					{
-						lineGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagramLink(diagramLink, connector,
-																						   sourceElement, targetElement);
+						lineGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagramLink(diagramLink, 
+																						   connector,
+																						   sourceDiagramObject, 
+																						   targetDiagramObject,
+																						   sourceElement, 
+																						   targetElement);
 					}
 
 					bool startArrow = false;
@@ -1455,18 +1459,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 			return result;
 		}
 
-		private string GetRevisonFromDate(DateTime changeDate)
-        {
-			string result = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "");
-
-			SHA1Managed sha1 = new SHA1Managed();
-
-			byte[] hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(changeDate.ToUniversalTime().ToString()));
-
-			result = string.Concat(hash.Select(b => b.ToString("x2")));
-
-			return result;
-		}
+		
 
 	}
 }
