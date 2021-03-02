@@ -37,7 +37,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 		private static Logger logger = LogManager.GetCurrentClassLogger();
 
 		private int _maxX = 0;
-		//private int _maxY = 0;
+		private int _maxY = 0;
 
 		private EAAPI.Repository _repository;
 
@@ -57,9 +57,6 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 			ScalableVectorGraphics result = new ScalableVectorGraphics();
 
-			
-			result.Height = diagram.cy.ToString();
-
 			Group diagramCanvasGroup = new Group();
 
 			diagramCanvasGroup.Metadata = null;
@@ -74,12 +71,33 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 			ConvertDiagramLinks(diagram, ref diagramCanvasGroup);
 
-			_maxX += 10;
+			_maxX += 20;
 			result.Width = _maxX.ToString();
+
+			_maxY += 20;
+			result.Height = _maxY.ToString();
+
+			SVG.DataModels.Rectangle bounds = new SVG.DataModels.Rectangle()
+			{
+				X = "0",
+				Y = "0",
+				Width = _maxX.ToString(),
+				Height = _maxY.ToString(),
+				Fill = "transparent",
+				Stroke = "black",
+				StrokeWidth = "1"
+			};
+
+			result.Rectangles.Add(bounds);
 
 			if (_metaDataCreator != null)
 			{
-				diagramCanvasGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagram(diagram, diagram.cy, _maxX);
+				if(diagramCanvasGroup.Metadata == null)
+                {
+					diagramCanvasGroup.Metadata = new Metadata();
+                }
+
+				diagramCanvasGroup.Metadata.Shape = _metaDataCreator.CreateMetaDataForDiagram(diagram, diagram.cy, _maxX);
 			}
 
 			result.Groups.Add(diagramCanvasGroup);
@@ -122,13 +140,17 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 					if (_metaDataCreator != null)
 					{
-						lineGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagramLink(diagramLink, 
-																						   connector,
-																						   sourceDiagramObject, 
-																						   targetDiagramObject,
-																						   sourceElement, 
-																						   targetElement);
-					}
+                        if (lineGroup.Metadata == null)
+                        {
+                            lineGroup.Metadata = new Metadata();
+                        }
+                        lineGroup.Metadata.Edge = _metaDataCreator.CreateMetaDataForDiagramLink(diagramLink,
+                                                                                           connector,
+                                                                                           sourceDiagramObject,
+                                                                                           targetDiagramObject,
+                                                                                           sourceElement,
+                                                                                           targetElement);
+                    }
 
 					bool startArrow = false;
 					bool endArrow = false;
@@ -152,6 +174,10 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 					int startY;
 					int endY;
 
+
+
+					//if(diagramLink.LineStyle == EAAPI.LinkLineStyle.LineStyleOrthogonalRounded)
+					
 					//EAAPI.LinkLineStyle.LineStyleOrthogonalRounded
 
 					List<Point> linkPathPoints = ParseEaLinkPath(diagramLink.Path);
@@ -796,6 +822,16 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						_maxX = x2;
                     }
 
+					if(y1 > _maxY)
+                    {
+						_maxY = y1;
+                    }
+
+					if (y2 > _maxY)
+					{
+						_maxY = y2;
+					}
+
 					segmentCounter++;
 
 				} while (segmentCounter <= linkPathPoints.Count);
@@ -848,12 +884,66 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 			return result;
 		}
 
+		private LinkGeometry ParseEaLinkGeometry(string geometry)
+		{
+			LinkGeometry result = new LinkGeometry();
+
+			char[] elementSeparator = { ';' };
+
+			char[] xySeparator = { ':' };
+
+			char[] keyValueSepatartor = { '=' };
+
+			string[] pathElements = geometry.Split(elementSeparator);
+
+			foreach (string segment in pathElements)
+			{
+				if (!string.IsNullOrWhiteSpace(segment))
+				{
+					if(!segment.Contains(':'))
+                    {
+						string[] keyValuePair = segment.Split(keyValueSepatartor);
+
+						if(keyValuePair.Length == 2)
+                        {
+							string key = keyValuePair[0];
+
+							switch(key)
+                            {
+								case "SX":
+									result.StartX = int.Parse(keyValuePair[1]);
+									break;
+
+
+								case "SY":
+									result.StartY = int.Parse(keyValuePair[1]);
+									break;
+
+								case "EX":
+									result.EndX = int.Parse(keyValuePair[1]);
+									break;
+
+								case "EY":
+									result.EndY = int.Parse(keyValuePair[1]);
+									break;
+
+
+
+
+
+							}
+						}
+                    }
+				}
+			}
+
+			return result;
+		}
+
+
 		private void ConvertDiagramElements(EAAPI.Diagram diagram, ref Group result)
 		{
 			NumberFormatInfo usFormat = CultureInfo.GetCultureInfo("en-US").NumberFormat;
-
-			 
-
 
 			List<SvgElement> elements = new List<SvgElement>();
 
@@ -875,8 +965,12 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 				if (_metaDataCreator != null)
 				{
-					elementGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagramObject(diagramObject, element);
-				}
+                    if (elementGroup.Metadata == null)
+                    {
+                        elementGroup.Metadata = new Metadata();
+                    }
+                    elementGroup.Metadata.Shape = _metaDataCreator.CreateMetaDataForDiagramObject(diagramObject, element);
+                }
 
 				string elementType = element.Type;
 				string elementStereotype = element.Stereotype;
@@ -911,6 +1005,11 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 					if (diagramObject.left + recatangleWidth > _maxX)
 					{
 						_maxX = diagramObject.left + recatangleWidth;
+					}
+
+					if((diagramObject.top * -1) + rectangleHeight > _maxY)
+                    {
+						_maxY = (diagramObject.top * -1) + rectangleHeight;
 					}
 
 					elementGroup.Rectangles.Add(rectangle);
@@ -1014,6 +1113,11 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						_maxX = (int)(diagramObject.left + textWidth / 2);
 					}
 
+					if ((-diagramObject.top + rectangleHeight + 12) > _maxY)
+					{
+						_maxY = (-diagramObject.top + rectangleHeight + 12);
+					}
+
 					elementGroup.Texts.Add(nameText);
 
 					elements.Add(elementGroup);
@@ -1053,12 +1157,14 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 							}
 						}
 
+						int rectangleHeight = (-diagramObject.bottom) - (-diagramObject.top);
+
 						SVG.DataModels.Rectangle rectangle = new SVG.DataModels.Rectangle()
 						{
 							X = diagramObject.left.ToString(),
 							Y = "" + (diagramObject.top * -1),
 							Width = recatangleWidth.ToString(),
-							Height = ((diagramObject.bottom * -1) - (diagramObject.top * -1)).ToString(),
+							Height = rectangleHeight.ToString(),
 							Fill = elementShape.FillColor,
 							Stroke = strokeColor,
 							StrokeWidth = elementShape.BorderWidth.ToString()
@@ -1080,6 +1186,11 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						if (diagramObject.left + recatangleWidth > _maxX)
 						{
 							_maxX = diagramObject.left + recatangleWidth;
+						}
+
+						if ((diagramObject.top * -1) + rectangleHeight > _maxY)
+						{
+							_maxY = (diagramObject.top * -1) + rectangleHeight;
 						}
 
 						elementGroup.Rectangles.Add(rectangle);
@@ -1188,7 +1299,10 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 							_maxX = (int)(middleX + 8);
 						}
 
-
+						if(middleY +8 > _maxY)
+                        {
+							_maxY = (int)(middleY + 8);
+                        }
 
 						// port label
 						Point labelSize = diagramObject.GetLabelSize();
@@ -1252,6 +1366,11 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 								_maxX = (int)(labelX + labelWidth / 2);
 							}
 
+							if(labelY + offsetY > _maxY)
+                            {
+								_maxY = (int)(labelY + offsetY);
+                            }
+
 							Text nameText = new Text()
 							{
 								X = (labelX + offsetX).ToString(usFormat),
@@ -1307,6 +1426,10 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 			// add ports at the end to draw on top
 			foreach (SvgElement sortedElement in sortedPorts)
 			{
+				if (sortedElement.Description == null)
+				{
+					sortedElement.Description = new Description();
+				}
 				sortedElement.Description.Text = sortedElement.Sequence.ToString();
 
 				//Console.WriteLine(sortedElement.Sequence);

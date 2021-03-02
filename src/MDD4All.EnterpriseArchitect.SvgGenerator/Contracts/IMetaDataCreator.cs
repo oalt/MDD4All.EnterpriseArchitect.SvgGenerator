@@ -1,6 +1,8 @@
 ﻿#if EA_FACADE
 using EAAPI = MDD4All.EAFacade.DataModels.Contracts;
 #else
+using MDD4All.SpecIF.DataModels.DiagramInterchange;
+using MDD4All.SVG.DataModels;
 using EAAPI = EA;
 #endif
 
@@ -12,12 +14,12 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator.Contracts
 {
     public interface IMetaDataCreator
     {
-        object CreateMetaDataForDiagram(EAAPI.Diagram diagram, int height, int width);
+        Shape CreateMetaDataForDiagram(EAAPI.Diagram diagram, int height, int width);
 
-        object CreateMetaDataForDiagramObject(EAAPI.DiagramObject diagramObject,
+        Shape CreateMetaDataForDiagramObject(EAAPI.DiagramObject diagramObject,
                                               EAAPI.Element element);
 
-        object CreateMetaDataForDiagramLink(EAAPI.DiagramLink diagramLink,
+        Edge CreateMetaDataForDiagramLink(EAAPI.DiagramLink diagramLink,
                                             EAAPI.Connector connector,
                                             EAAPI.DiagramObject sourceDiagramObject,
                                             EAAPI.DiagramObject targetDiagramObject,

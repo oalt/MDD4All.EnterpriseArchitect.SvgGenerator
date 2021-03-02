@@ -31,6 +31,11 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
             ElementShape result = _elementShapes.Find(shape => shape.Type == type && shape.Stereotype == stereotype);
 
+            if(result == null)
+            {
+                result = _elementShapes.Find(shape => shape.Type == type && shape.Stereotype == "");
+            }
+
             if (result == null)
             {
                 logger.Debug("Not found " + type + " " + stereotype);
@@ -100,6 +105,16 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
             },
             new ElementShape
             {
+                Type = "Requirement"
+
+            },
+            new ElementShape
+            {
+                Type = "Requirement",
+                Stereotype = "fmcreq"
+            },
+            new ElementShape
+            {
                 Type = "Object",
                 Stereotype = "agent",
                 BorderWidth = 2
@@ -132,7 +147,16 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
             },
             new ElementShape
             {
+                Type = "ActionPin"
+            },
+            new ElementShape
+            {
                 Type = "State",
+                CornerRadius = 20
+            },
+            new ElementShape
+            {
+                Type = "Action",
                 CornerRadius = 20
             },
             new ElementShape
@@ -140,6 +164,12 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
                 Type = "UseCase",
                 MainShape = "Ellipse",
                 MainLabelVerticalPosition = "center"
+            },
+            new ElementShape
+            {
+                Type = "StateNode",
+                MainShape = "Circle",
+                FillColor = "black"
             }
 
 

@@ -20,10 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Interop.EA">
       <HintPath>..\libs\Interop.EA.dll</HintPath>
     </Reference>

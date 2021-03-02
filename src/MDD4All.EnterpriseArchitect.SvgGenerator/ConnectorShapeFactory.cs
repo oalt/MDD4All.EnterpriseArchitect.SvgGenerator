@@ -27,6 +27,11 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
             ConnectorShape result = _connectorShapes.Find(shape => shape.Type == type && shape.Stereotype == stereotype);
 
+            if(result == null)
+            {
+                result = _connectorShapes.Find(shape => shape.Type == type && shape.Stereotype == "");
+            }
+
             if (result == null)
             {
                 logger.Debug("Not found " + type + " " + stereotype);
@@ -50,12 +55,36 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
             },
             new ConnectorShape
             {
+                Type = "Dependency",
+                Stereotype = "satisfy",
+                StrokeDashArray = "8 4"
+            },
+            new ConnectorShape
+            {
+                Type = "Dependency",
+                Stereotype = "verify",
+                StrokeDashArray = "8 4"
+            },
+            new ConnectorShape
+            {
                 Type = "Connector",
                 Stereotype = "access type"
             },
             new ConnectorShape
             {
                 Type = "Association"
+            },
+            new ConnectorShape
+            {
+                Type = "ControlFlow"
+            },
+            new ConnectorShape
+            {
+                Type = "ObjectFlow"
+            },
+            new ConnectorShape
+            {
+                Type = "StateFlow"
             }
         };
 
