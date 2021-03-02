@@ -5,9 +5,12 @@ using System.Xml.Serialization;
 
 namespace MDD4All.SpecIF.DataModels.DiagramInterchange.BaseElements
 {
-    public abstract class SpecIfDiagramInterchangeBase
+    public abstract class SpecIfReferenceBase
     {
         [XmlAttribute("id")]
-        public string ID { get; set; } = null;
+        public string IdReference { get; set; } = "";
+
+        [XmlAttribute("revision")]
+        public string RevisionReference { get; set; } = "";
     }
 }
