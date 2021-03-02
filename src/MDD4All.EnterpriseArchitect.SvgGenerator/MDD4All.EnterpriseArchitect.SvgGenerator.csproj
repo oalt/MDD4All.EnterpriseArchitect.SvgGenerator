@@ -18,6 +18,10 @@
     <PackageReference Include="NLog" Version="4.5.11" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
+    
+  <ItemGroup>
+    <ProjectReference Include="..\MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Interop.EA">

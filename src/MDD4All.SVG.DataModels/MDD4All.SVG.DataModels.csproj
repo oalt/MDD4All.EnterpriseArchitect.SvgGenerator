@@ -14,7 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Metadata.cs" />
+      <ProjectReference Include="..\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj" />
     </ItemGroup>
 
 </Project>
