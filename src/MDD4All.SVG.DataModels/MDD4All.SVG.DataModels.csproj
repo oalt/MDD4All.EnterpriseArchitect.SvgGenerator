@@ -13,8 +13,4 @@
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj" />
-    </ItemGroup>
-
 </Project>
