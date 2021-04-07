@@ -1,4 +1,7 @@
-﻿#if EA_FACADE
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+#if EA_FACADE
 namespace MDD4All.EAFacade.SvgGenerator.DataModels
 #else
 namespace MDD4All.EnterpriseArchitect.SvgGenerator.DataModels

@@ -1,4 +1,7 @@
-﻿using NLog;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Text;

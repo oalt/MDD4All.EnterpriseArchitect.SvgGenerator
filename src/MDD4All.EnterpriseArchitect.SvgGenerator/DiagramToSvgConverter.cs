@@ -23,6 +23,7 @@ using System.Drawing;
 using NLog;
 using System.Security.Cryptography;
 using System.Text;
+using MDD4All.SpecIF.DataModels.DiagramInterchange;
 
 
 
@@ -94,10 +95,10 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 			{
 				if(diagramCanvasGroup.Metadata == null)
                 {
-					diagramCanvasGroup.Metadata = new Metadata();
+					diagramCanvasGroup.Metadata = new SpecIfMetadata();
                 }
 
-				diagramCanvasGroup.Metadata.Shape = _metaDataCreator.CreateMetaDataForDiagram(diagram, diagram.cy, _maxX);
+				diagramCanvasGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagram(diagram, diagram.cy, _maxX);
 			}
 
 			result.Groups.Add(diagramCanvasGroup);
@@ -144,7 +145,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
                         {
                             lineGroup.Metadata = new Metadata();
                         }
-                        lineGroup.Metadata.Edge = _metaDataCreator.CreateMetaDataForDiagramLink(diagramLink,
+                        lineGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagramLink(diagramLink,
                                                                                            connector,
                                                                                            sourceDiagramObject,
                                                                                            targetDiagramObject,
@@ -969,7 +970,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
                     {
                         elementGroup.Metadata = new Metadata();
                     }
-                    elementGroup.Metadata.Shape = _metaDataCreator.CreateMetaDataForDiagramObject(diagramObject, element);
+                    elementGroup.Metadata = _metaDataCreator.CreateMetaDataForDiagramObject(diagramObject, element);
                 }
 
 				string elementType = element.Type;
