@@ -1535,11 +1535,11 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 			if (bottomToTop)
 			{
-				pathData = "M" + x + "," + y + " L" + (x - 5) + "," + (y + 5) + " L" + (x + 5) + "," + (y + 5) + " z";
+				pathData = "M" + x + "," + y + " L" + (x - l) + "," + (y + l) + " L" + (x + l) + "," + (y + l) + " z";
 			}
 			else
 			{
-				pathData = "M" + x + "," + y + " L" + (x + 5) + "," + (y - 5) + " L" + (x - 5) + "," + (y - 5) + " z";
+				pathData = "M" + x + "," + y + " L" + (x + l) + "," + (y - l) + " L" + (x - l) + "," + (y - l) + " z";
 			}
 
 			Path verticalArrowPath = new Path()

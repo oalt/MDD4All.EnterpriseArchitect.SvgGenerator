@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SVG.DataModels", "MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj", "{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.EnterpriseArchitect.SvgGenerator", "MDD4All.EnterpriseArchitect.SvgGenerator\MDD4All.EnterpriseArchitect.SvgGenerator.csproj", "{31750FAF-22AE-4924-8E48-AA51E2B9BC46}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8A38CEFE-AA36-4744-9E41-4632BA39D4BB}"
@@ -20,7 +18,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2_Components", "2_Component
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3_DataModels", "3_DataModels", "{B2409F1E-88DE-4A96-9C61-16F28E6F7CE5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataModels.DiagramInterchange", "MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj", "{DF862547-541E-4B95-A596-6191B8C6B375}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataModels.DiagramInterchange", "MDD4All.SpecIF.DataModels.DiagramInterchange\src\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj", "{57D6276C-B729-4AE2-A707-1147A9B1B36E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SVG.DataModels", "MDD4All.SVG.DataModels\src\MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj", "{58DF8578-390B-40A1-8CB5-A1A9FF5E806B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,26 +28,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{31750FAF-22AE-4924-8E48-AA51E2B9BC46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{31750FAF-22AE-4924-8E48-AA51E2B9BC46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31750FAF-22AE-4924-8E48-AA51E2B9BC46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31750FAF-22AE-4924-8E48-AA51E2B9BC46}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF862547-541E-4B95-A596-6191B8C6B375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF862547-541E-4B95-A596-6191B8C6B375}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF862547-541E-4B95-A596-6191B8C6B375}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF862547-541E-4B95-A596-6191B8C6B375}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57D6276C-B729-4AE2-A707-1147A9B1B36E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57D6276C-B729-4AE2-A707-1147A9B1B36E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57D6276C-B729-4AE2-A707-1147A9B1B36E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57D6276C-B729-4AE2-A707-1147A9B1B36E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58DF8578-390B-40A1-8CB5-A1A9FF5E806B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58DF8578-390B-40A1-8CB5-A1A9FF5E806B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58DF8578-390B-40A1-8CB5-A1A9FF5E806B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58DF8578-390B-40A1-8CB5-A1A9FF5E806B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{590D7562-FCCC-42D9-92E5-7C4A82C24EBF} = {B2409F1E-88DE-4A96-9C61-16F28E6F7CE5}
 		{31750FAF-22AE-4924-8E48-AA51E2B9BC46} = {026335AB-A9FF-4DCC-BC26-8AA213A17122}
-		{DF862547-541E-4B95-A596-6191B8C6B375} = {B2409F1E-88DE-4A96-9C61-16F28E6F7CE5}
+		{57D6276C-B729-4AE2-A707-1147A9B1B36E} = {B2409F1E-88DE-4A96-9C61-16F28E6F7CE5}
+		{58DF8578-390B-40A1-8CB5-A1A9FF5E806B} = {B2409F1E-88DE-4A96-9C61-16F28E6F7CE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FCDD1523-DC86-4B44-90D1-A616830A3A7F}
