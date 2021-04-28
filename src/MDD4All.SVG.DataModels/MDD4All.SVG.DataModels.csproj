@@ -5,6 +5,8 @@
     <Authors>Dr. Oliver Alt</Authors>
     <Company>MDD4All.de</Company>
     <Description>Data models for SVG serialization</Description>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>MDD4All_Github.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
