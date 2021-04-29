@@ -27,9 +27,10 @@
     <PackageReference Include="NLog" Version="4.5.11" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
-
+    
   <ItemGroup>
-    <ProjectReference Include="..\MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataModels.DiagramInterchange\src\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj" />
+    <ProjectReference Include="..\MDD4All.SVG.DataModels\src\MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj" />
   </ItemGroup>
 
 </Project>
