@@ -19,6 +19,8 @@ variables:
 name: $(BuildID)
 
 steps:
+- checkout: self
+  submodules: true
 
 - script: |
     set /p VER=<src/version.txt
