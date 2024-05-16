@@ -22,7 +22,7 @@
     <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="3.0.1.258" />
     <PackageReference Include="MDD4All.SpecIF.DataModels.DiagramInterchange" Version="3.0.0.3" />
     <PackageReference Include="NLog" Version="4.5.11" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
   </ItemGroup>
 
   <ItemGroup>
