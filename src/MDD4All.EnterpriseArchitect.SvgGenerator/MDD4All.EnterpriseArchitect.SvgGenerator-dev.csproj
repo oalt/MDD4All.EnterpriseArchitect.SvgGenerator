@@ -20,13 +20,12 @@
     </PropertyGroup>
     
   <ItemGroup>
-    <PackageReference Include="MDD4All.EnterpriseArchitect.Logging" Version="2.0.1.3" />
-    <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="3.0.1.258" />
-    <PackageReference Include="NLog" Version="4.5.11" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
   </ItemGroup>
     
   <ItemGroup>
+    <ProjectReference Include="..\..\..\MDD4All.EnterpriseArchitect.Logging\src\MDD4All.EnterpriseArchitect.Logging\MDD4All.EnterpriseArchitect.Logging-dev.csproj" />
+    <ProjectReference Include="..\..\..\MDD4All.EnterpriseArchitect.Manipulations\src\MDD4All.EA.Manipulations\MDD4All.EnterpriseArchitect.Manipulations-dev.csproj" />
     <ProjectReference Include="..\..\..\MDD4All.SpecIF.DataModels.DiagramInterchange\src\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange-dev.csproj" />
   </ItemGroup>
 
