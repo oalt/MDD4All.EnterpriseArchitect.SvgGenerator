@@ -1,38 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>Dr. Oliver Alt</Authors>
-    <Company>MDD4All.de</Company>
-    <Description>SVG generator to generate SpecIF-conform SVG diagrams from Enterprise Architect models.</Description>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>MDD4All_Github.snk</AssemblyOriginatorKeyFile>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>SVG Generator EnterpriseArchitect</PackageTags>
-    <AssemblyName>MDD4All.EnterpriseArchitect.SvgGenerator</AssemblyName>
-    <RootNamespace>MDD4All.EnterpriseArchitect.SvgGenerator</RootNamespace>
-  </PropertyGroup>
-    
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+        <Authors>Dr. Oliver Alt</Authors>
+        <Company>MDD4All.de</Company>
+        <Description>SVG generator to generate SpecIF-conform SVG diagrams from Enterprise Architect models.</Description>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>MDD4All_Github.snk</AssemblyOriginatorKeyFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageTags>SVG Generator EnterpriseArchitect</PackageTags>
+        <AssemblyName>MDD4All.EnterpriseArchitect.SvgGenerator</AssemblyName>
+        <RootNamespace>MDD4All.EnterpriseArchitect.SvgGenerator</RootNamespace>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <DebugType>full</DebugType>
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
-    
-  <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
-  </ItemGroup>
-    
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\MDD4All.EnterpriseArchitect.Logging\src\MDD4All.EnterpriseArchitect.Logging\MDD4All.EnterpriseArchitect.Logging-dev.csproj" />
-    <ProjectReference Include="..\..\..\MDD4All.EnterpriseArchitect.Manipulations\src\MDD4All.EA.Manipulations\MDD4All.EnterpriseArchitect.Manipulations-dev.csproj" />
-    <ProjectReference Include="..\..\..\MDD4All.SpecIF.DataModels.DiagramInterchange\src\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange-dev.csproj" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Interop.EA">
-      <HintPath>..\libs\Interop.EA.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\MDD4All.EnterpriseArchitect.Logging\src\MDD4All.EnterpriseArchitect.Logging\MDD4All.EnterpriseArchitect.Logging-dev.csproj" />
+        <ProjectReference Include="..\..\..\MDD4All.EnterpriseArchitect.Manipulations\src\MDD4All.EA.Manipulations\MDD4All.EnterpriseArchitect.Manipulations-dev.csproj" />
+        <ProjectReference Include="..\..\..\MDD4All.SpecIF.DataModels.DiagramInterchange\src\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange-dev.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Interop.EA">
+            <HintPath>..\libs\Interop.EA.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 
 </Project>
