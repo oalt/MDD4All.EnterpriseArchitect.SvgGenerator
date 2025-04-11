@@ -66,7 +66,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 			diagramCanvasGroup.Title.Text = diagram.Name;
 
-			diagramCanvasGroup.Class = "specif-diagram";
+			diagramCanvasGroup.CssClass = "specif-diagram";
 
 			ConvertDiagramElements(diagram, ref diagramCanvasGroup);
 
@@ -118,7 +118,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 				lineGroup.ID = diagramLink.InstanceID.ToString();
 
-				lineGroup.Class = "specif-statement-diagram-element";
+				lineGroup.CssClass = "specif-statement-diagram-element";
 
 				lineGroup.Metadata = null;
 
@@ -334,7 +334,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 							line.StrokeDashArray = connectorShape.StrokeDashArray;
                         }
 
-                        lineGroup.Lines.Add(line);
+                        lineGroup.Elements.Add(line);
 
                         
 					}
@@ -414,7 +414,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 						arcPath.Data = "M" + startArc.X + " " + startArc.Y + "A10 10 0 0 " + clockWiseFlag + " " + endArc.X + " " + endArc.Y;
 
-						lineGroup.Paths.Add(arcPath);
+						lineGroup.Elements.Add(arcPath);
 					}
 
 					#endregion
@@ -444,7 +444,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 										startArrowPath = GetVerticalArrow(startX, startY, false);
 									}
 
-									lineGroup.Paths.Add(startArrowPath);
+									lineGroup.Elements.Add(startArrowPath);
 								}
 								else
 								{
@@ -460,7 +460,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 										startArrowPath = GetHorizontalArrow(startX, startY, true);
 									}
 
-									lineGroup.Paths.Add(startArrowPath);
+									lineGroup.Elements.Add(startArrowPath);
 
 								}
 							}
@@ -479,7 +479,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 									{
 										endArrowPath = GetVerticalArrow(endX, endY, true);
 									}
-									lineGroup.Paths.Add(endArrowPath);
+									lineGroup.Elements.Add(endArrowPath);
 								}
 								else
 								{
@@ -493,7 +493,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 									{
 										endArrowPath = GetHorizontalArrow(endX, endY, false);
 									}
-									lineGroup.Paths.Add(endArrowPath);
+									lineGroup.Elements.Add(endArrowPath);
 
 								}
 							}
@@ -519,7 +519,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 										startArrowPath = GetVerticalArrow(startX, startY, false);
 									}
 
-									lineGroup.Paths.Add(startArrowPath);
+									lineGroup.Elements.Add(startArrowPath);
 								}
 								else
 								{
@@ -535,7 +535,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 										startArrowPath = GetHorizontalArrow(startX, startY, true);
 									}
 
-									lineGroup.Paths.Add(startArrowPath);
+									lineGroup.Elements.Add(startArrowPath);
 
 								}
 							}
@@ -554,7 +554,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 									{
 										endArrowPath = GetVerticalArrow(endX, endY, true);
 									}
-									lineGroup.Paths.Add(endArrowPath);
+									lineGroup.Elements.Add(endArrowPath);
 								}
 								else
 								{
@@ -568,7 +568,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 									{
 										endArrowPath = GetHorizontalArrow(endX, endY, false);
 									}
-									lineGroup.Paths.Add(endArrowPath);
+									lineGroup.Elements.Add(endArrowPath);
 
 								}
 							}
@@ -576,7 +576,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 						#endregion
 
-						result.Groups.Add(lineGroup);
+						result.Elements.Add(lineGroup);
 					}
 				}
 			}
@@ -960,7 +960,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 				elementGroup.ID = diagramObject.InstanceGUID.ToString();
 
-				elementGroup.Class = "specif-resource-diagram-element";
+				elementGroup.CssClass = "specif-resource-diagram-element";
 
 				elementGroup.Metadata = null;
 
@@ -1013,7 +1013,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						_maxY = (diagramObject.top * -1) + rectangleHeight;
 					}
 
-					elementGroup.Rectangles.Add(rectangle);
+					elementGroup.Elements.Add(rectangle);
 
 					
 
@@ -1030,7 +1030,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						StrokeWidth = "1"
 					};
 
-					elementGroup.Circles.Add(circle);
+					elementGroup.Elements.Add(circle);
 
 					Line line1 = new Line()
 					{
@@ -1043,7 +1043,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						StrokeWidth = "1"
 					};
 
-					elementGroup.Lines.Add(line1);
+					elementGroup.Elements.Add(line1);
 
 					Line line2 = new Line()
 					{
@@ -1056,7 +1056,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						StrokeWidth = "1"
 					};
 
-					elementGroup.Lines.Add(line2);
+					elementGroup.Elements.Add(line2);
 
 					Line line3 = new Line()
 					{
@@ -1069,7 +1069,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						StrokeWidth = "1"
 					};
 
-					elementGroup.Lines.Add(line3);
+					elementGroup.Elements.Add(line3);
 
 					Line line4 = new Line()
 					{
@@ -1082,7 +1082,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						StrokeWidth = "1"
 					};
 
-					elementGroup.Lines.Add(line4);
+					elementGroup.Elements.Add(line4);
 
 					string classifierName = element.GetClassifierName(_repository);
 					string name = element.Name;
@@ -1119,7 +1119,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 						_maxY = (-diagramObject.top + rectangleHeight + 12);
 					}
 
-					elementGroup.Texts.Add(nameText);
+					elementGroup.Elements.Add(nameText);
 
 					elements.Add(elementGroup);
 				}
@@ -1194,7 +1194,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 							_maxY = (diagramObject.top * -1) + rectangleHeight;
 						}
 
-						elementGroup.Rectangles.Add(rectangle);
+						elementGroup.Elements.Add(rectangle);
 
 						
 						
@@ -1227,7 +1227,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 
 						
 
-						elementGroup.Circles.Add(circle);
+						elementGroup.Elements.Add(circle);
 
 						elements.Add(elementGroup);
 					}
@@ -1258,7 +1258,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 							ellipse.StrokeDashArray = elementShape.StrokeDashArray;
 						}
 
-						elementGroup.Ellipses.Add(ellipse);
+						elementGroup.Elements.Add(ellipse);
 					}
 
 					
@@ -1285,7 +1285,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 								DisplayedText = textLine
 							};
 
-							elementGroup.Texts.Add(nameText);
+							elementGroup.Elements.Add(nameText);
 							lineOffset += 16;
 						}
 
@@ -1384,7 +1384,7 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 								DisplayedText = textLine
 							};
 
-							elementGroup.Texts.Add(nameText);
+							elementGroup.Elements.Add(nameText);
 							n++;
 						}
 
@@ -1412,15 +1412,15 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 				if (sortedElement is SVG.DataModels.Rectangle)
 				{
 					
-					result.Rectangles.Add(sortedElement as SVG.DataModels.Rectangle);
+					result.Elements.Add(sortedElement as SVG.DataModels.Rectangle);
 				}
 				else if (sortedElement is Circle)
 				{
-					result.Circles.Add(sortedElement as Circle);
+					result.Elements.Add(sortedElement as Circle);
 				}
 				else if (sortedElement is Group)
 				{
-					result.Groups.Add(sortedElement as Group);
+					result.Elements.Add(sortedElement as Group);
 				}
 			}
 
@@ -1437,15 +1437,15 @@ namespace MDD4All.EnterpriseArchitect.SvgGenerator
 				if (sortedElement is SVG.DataModels.Rectangle)
 				{
 
-					result.Rectangles.Add(sortedElement as SVG.DataModels.Rectangle);
+					result.Elements.Add(sortedElement as SVG.DataModels.Rectangle);
 				}
 				else if (sortedElement is Circle)
 				{
-					result.Circles.Add(sortedElement as Circle);
+					result.Elements.Add(sortedElement as Circle);
 				}
 				else if (sortedElement is Group)
 				{
-					result.Groups.Add(sortedElement as Group);
+					result.Elements.Add(sortedElement as Group);
 				}
 			}
 		}
